@@ -94,7 +94,7 @@ namespace PathMaker
             CreateLobbyOptions options = new CreateLobbyOptions()
             {
                 IsPrivate = false,
-                Player = new Unity.Services.Lobbies.Models.Player(AuthenticationService.Instance.PlayerId)
+                //Player = new Unity.Services.Lobbies.Models.Player(AuthenticationService.Instance.PlayerId)
             };
 
             Lobby lobby = await Lobbies.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
