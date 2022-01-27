@@ -7,8 +7,7 @@ namespace PathMaker
     public enum GameState
     {
         Menu = 1,
-        Settings = 2,
-        Matchmaking = 4,
+        Lobby = 2,
     }
 
     [System.Serializable]
