@@ -27,5 +27,15 @@ namespace PathMaker
                 }
             }
         }
+
+        public override void CopyObserved(LocalGameState oldObserved)
+        {
+            if (m_State == oldObserved.State)
+            {
+                return;
+            }
+            m_State = oldObserved.State;
+            OnChanged(this);
+        }
     }
 }

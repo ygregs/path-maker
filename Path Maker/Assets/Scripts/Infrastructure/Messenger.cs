@@ -81,6 +81,9 @@ namespace PathMaker
     {
         None = 0,
         ChangeGameState = 100,
+
+        LobbyUserStatus = 102,
+        ClientUserApproved = 104,
     }
 
     public interface IReceiveMessages
