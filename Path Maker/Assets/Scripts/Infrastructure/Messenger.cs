@@ -84,6 +84,8 @@ namespace PathMaker
 
         LobbyUserStatus = 102,
         ClientUserApproved = 104,
+
+        DisplayErrorPopup = 300,
     }
 
     public interface IReceiveMessages
