@@ -76,5 +76,15 @@ namespace PathMaker
         {
             OnReceiveMessage(MessageType.LobbyUserStatus, UserStatus.Lobby);
         }
+
+        private void OnDestroy()
+        {
+            ForceLeaveAttempt();
+        }
+
+        private void ForceLeaveAttempt()
+        {
+            Locator.Get.Messenger.Unsubscribe(this);
+        }
     }
 }
