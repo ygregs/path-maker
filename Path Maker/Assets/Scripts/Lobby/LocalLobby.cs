@@ -8,6 +8,8 @@ namespace PathMaker
     public enum LobbyState
     {
         Lobby = 1,
+        CountDown = 2,
+        InGame = 4
     }
 
     [System.Serializable]

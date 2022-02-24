@@ -13,7 +13,6 @@ namespace PathMaker.lobby
                 if (s_instance == null)
                 {
                     s_instance = new AsyncRequestLobby();
-
                 }
                 return s_instance;
             }
