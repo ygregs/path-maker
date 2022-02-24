@@ -29,7 +29,7 @@ namespace PathMaker
             string currentTrace = System.Environment.StackTrace;
             try
             {
-                await task;
+                result = await task;
             }
             catch (Exception e)
             {

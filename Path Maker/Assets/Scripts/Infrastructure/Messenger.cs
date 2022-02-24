@@ -8,7 +8,7 @@ namespace PathMaker
     public class Messenger : IMessenger
     {
         private List<IReceiveMessages> m_receivers = new List<IReceiveMessages>();
-        private const float k_durationToleranceMs = 10;
+        private const float k_durationToleranceMs = 30;
 
         private Queue<Action> m_pendingReceivers = new Queue<Action>();
         private int m_recurseCount = 0;
@@ -67,7 +67,7 @@ namespace PathMaker
             m_recurseCount--;
         }
 
-        public void OnReProvide(IMessenger previousProvider)
+        public void OnReProvided(IMessenger previousProvider)
         {
             if (previousProvider is Messenger)
             {
@@ -80,10 +80,26 @@ namespace PathMaker
     public enum MessageType
     {
         None = 0,
-        ChangeGameState = 100,
+        RenameRequest = 1,
+        JoinLobbyRequest = 2,
+        CreateLobbyRequest = 3,
+        QueryLobbies = 4,
+        QuickJoin = 5,
 
+        ChangeGameState = 100,
+        ConfirmInGameState = 101,
         LobbyUserStatus = 102,
+        UserSetEmote = 103,
         ClientUserApproved = 104,
+        ClientUserSeekingDisapproval = 105,
+        EndGame = 106,
+
+        StartCountdown = 200,
+        CancelCountdown = 201,
+        CompleteCountdown = 202,
+        MinigameBeginning = 203,
+        InstructionsShown = 204,
+        MinigameEnding = 205,
 
         DisplayErrorPopup = 300,
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PathMaker.Auth;
 
 namespace PathMaker
 {
@@ -27,7 +28,7 @@ namespace PathMaker
 
     public interface IProvidable<T>
     {
-        void OnReProvide(T previousProvider);
+        void OnReProvided(T previousProvider);
     }
 
     public class LocatorBase
@@ -37,6 +38,8 @@ namespace PathMaker
         public LocatorBase()
         {
             Provide(new Messenger());
+            Provide(new UpdateSlowNoop());
+            Provide(new IdentityNoop());
 
             OnFinishConstruction();
         }
@@ -49,7 +52,7 @@ namespace PathMaker
             if (m_provided.ContainsKey(type))
             {
                 var previousProvider = (T)m_provided[type]; // Ici, on caste m_provided[type] -> le (T) renvoie une erreure si m_provided[type] n'est pas du type, ou derive de T.
-                instance.OnReProvide(previousProvider);
+                instance.OnReProvided(previousProvider);
                 m_provided.Remove(type);
             }
 
@@ -68,5 +71,11 @@ namespace PathMaker
 
         public IMessenger Messenger => Locate<IMessenger>();
         public void Provide(IMessenger messenger) { ProvideAny<IMessenger>(messenger); }
+
+        public IUpdateSlow UpdateSlow => Locate<IUpdateSlow>();
+        public void Provide(IUpdateSlow updateSlow) { ProvideAny(updateSlow); }
+
+        public IIdentity Identity => Locate<IIdentity>();
+        public void Provide(IIdentity identity) { ProvideAny(identity); }
     }
 }
