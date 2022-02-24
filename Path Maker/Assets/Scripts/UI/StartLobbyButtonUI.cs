@@ -6,7 +6,7 @@ namespace PathMaker.UI
     {
         public void ToLobbyMenu()
         {
-            Locator.Get.Messenger.OnReceiveMessage(MessageType.ChangeGameState, GameState.Lobby);
+            Locator.Get.Messenger.OnReceiveMessage(MessageType.ChangeGameState, GameState.JoinMenu);
         }
     }
 }
