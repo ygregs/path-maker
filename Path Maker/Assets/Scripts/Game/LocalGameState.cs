@@ -8,6 +8,7 @@ namespace PathMaker
     {
         Menu = 1,
         Lobby = 2,
+        JoinMenu = 4,
     }
 
     [System.Serializable]

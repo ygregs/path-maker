@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,11 +13,28 @@ namespace PathMaker
         private List<LocalLobbyObserver> m_LocalLobbyObservers = new List<LocalLobbyObserver>();
         [SerializeField]
         private List<LobbyUserObserver> m_LocalUserObservers = new List<LobbyUserObserver>();
+        [SerializeField]
+        private List<LobbyServiceDataObserver> m_LobbyServiceObservers = new List<LobbyServiceDataObserver>();
 
         private LocalGameState m_localGameState = new LocalGameState();
         private LobbyUser m_localUser;
         private LocalLobby m_localLobby;
 
+        private LobbyServiceData m_lobbyServiceData = new LobbyServiceData();
+        private LobbyContentHeartbeat m_lobbyContentHeartbeat = new LobbyContentHeartbeat();
+        private relay.RelayUtpSetup m_relaySetup;
+        private relay.RelayUtpClient m_relayClient;
+
+        private void Awake()
+        {
+            // Do some arbitrary operations to instantiate singletons.
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
+            var unused = Locator.Get;
+#pragma warning restore IDE0059
+
+            Locator.Get.Provide(new Auth.Identity(OnAuthSignIn));
+            Application.wantsToQuit += OnWantToQuit;
+        }
         private void Start()
         {
             m_localLobby = new LocalLobby { State = LobbyState.Lobby };
@@ -25,11 +44,24 @@ namespace PathMaker
             BeginObservers();
         }
 
+        private void OnAuthSignIn()
+        {
+            Debug.Log("Signed in.");
+            m_localUser.ID = Locator.Get.Identity.GetSubIdentity(Auth.IIdentityType.Auth).GetContent("id");
+            m_localUser.DisplayName = NameGenerator.GetName(m_localUser.ID);
+            m_localLobby.AddPlayer(m_localUser); // The local LobbyUser object will be hooked into UI before the LocalLobby is populated during lobby join, so the LocalLobby must know about it already when that happens.
+            //StartVivoxLogin();
+        }
+
         private void BeginObservers()
         {
             foreach (var gameStateObs in m_GameStateObservers)
             {
                 gameStateObs.BeginObserving(m_localGameState);
+            }
+            foreach (var serviceObs in m_LobbyServiceObservers)
+            {
+                serviceObs.BeginObserving(m_lobbyServiceData);
             }
             foreach (var lobbyObs in m_LocalLobbyObservers)
             {
@@ -44,7 +76,17 @@ namespace PathMaker
         public void OnReceiveMessage(MessageType type, object msg)
         {
             print($"Receive message of type {type} : \"{msg}\"");
-            if (type == MessageType.ClientUserApproved)
+            if (type == MessageType.CreateLobbyRequest)
+            {
+                LocalLobby.LobbyData createLobbyData = (LocalLobby.LobbyData)msg;
+                LobbyAsyncRequests.Instance.CreateLobbyAsync(createLobbyData.LobbyName, createLobbyData.MaxPlayerCount, createLobbyData.Private, m_localUser, (r) =>
+                    {
+                        lobby.ToLocalLobby.Convert(r, m_localLobby);
+                        OnCreatedLobby();
+                    },
+                    OnFailedJoin);
+            }
+            else if (type == MessageType.ClientUserApproved)
             {
                 ConfirmApproval();
             }
@@ -58,9 +100,73 @@ namespace PathMaker
             }
         }
 
+        private void OnFailedJoin()
+        {
+            SetGameState(GameState.JoinMenu);
+        }
+
         private void SetGameState(GameState state)
         {
+            bool isLeavingLobby = (state == GameState.Menu || state == GameState.JoinMenu) && m_localGameState.State == GameState.Lobby;
             m_localGameState.State = state;
+            if (isLeavingLobby)
+            {
+                OnLeftLobby();
+            }
+        }
+
+        private void OnCreatedLobby()
+        {
+            m_localUser.IsHost = true;
+            OnJoinedLobby();
+        }
+
+        private void OnJoinedLobby()
+        {
+            LobbyAsyncRequests.Instance.BeginTracking(m_localLobby.LobbyID);
+            //m_lobbyContentHeartbeat.BeginTracking(m_localLobby, m_localUser);
+            SetUserLobbyState();
+
+            // The host has the opportunity to reject incoming players, but to do so the player needs to connect to Relay without having game logic available.
+            // In particular, we should prevent players from joining voice chat until they are approved.
+            OnReceiveMessage(MessageType.LobbyUserStatus, UserStatus.Connecting);
+            if (m_localUser.IsHost)
+            {
+                //StartRelayConnection();
+                //StartVivoxJoin();
+            }
+            else
+            {
+                //StartRelayConnection();
+            }
+        }
+
+        private void OnLeftLobby()
+        {
+            m_localUser.ResetState();
+            LobbyAsyncRequests.Instance.LeaveLobbyAsync(m_localLobby.LobbyID, ResetLocalLobby);
+            m_lobbyContentHeartbeat.EndTracking();
+            LobbyAsyncRequests.Instance.EndTracking();
+            //m_vivoxSetup.LeaveLobbyChannel();
+
+            if (m_relaySetup != null)
+            {
+                Component.Destroy(m_relaySetup);
+                m_relaySetup = null;
+            }
+            if (m_relayClient != null)
+            {
+                m_relayClient.Dispose();
+                StartCoroutine(FinishCleanup());
+
+                // We need to delay slightly to give the disconnect message sent during Dispose time to reach the host, so that we don't destroy the connection without it being flushed first.
+                IEnumerator FinishCleanup()
+                {
+                    yield return null;
+                    Component.Destroy(m_relayClient);
+                    m_relayClient = null;
+                }
+            }
         }
 
         private void ConfirmApproval()
@@ -75,6 +181,33 @@ namespace PathMaker
         private void CompleteRelayConnection()
         {
             OnReceiveMessage(MessageType.LobbyUserStatus, UserStatus.Lobby);
+        }
+
+        private void SetUserLobbyState()
+        {
+            SetGameState(GameState.Lobby);
+            OnReceiveMessage(MessageType.LobbyUserStatus, UserStatus.Lobby);
+        }
+
+        private void ResetLocalLobby()
+        {
+            m_localLobby.CopyObserved(new LocalLobby.LobbyData(), new Dictionary<string, LobbyUser>());
+            m_localLobby.AddPlayer(m_localUser); // As before, the local player will need to be plugged into UI before the lobby join actually happens.
+            m_localLobby.RelayServer = null;
+        }
+
+        private IEnumerator LeaveBeforeQuit()
+        {
+            ForceLeaveAttempt();
+            yield return null;
+            Application.Quit();
+        }
+
+        private bool OnWantToQuit()
+        {
+            bool canQuit = string.IsNullOrEmpty(m_localLobby?.LobbyID);
+            StartCoroutine(LeaveBeforeQuit());
+            return canQuit;
         }
 
         private void OnDestroy()
