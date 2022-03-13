@@ -100,11 +100,6 @@ namespace PathMaker
             }
         }
 
-        private void OnFailedJoin()
-        {
-            SetGameState(GameState.JoinMenu);
-        }
-
         private void SetGameState(GameState state)
         {
             bool isLeavingLobby = (state == GameState.Menu || state == GameState.JoinMenu) && m_localGameState.State == GameState.Lobby;
@@ -132,12 +127,12 @@ namespace PathMaker
             OnReceiveMessage(MessageType.LobbyUserStatus, UserStatus.Connecting);
             if (m_localUser.IsHost)
             {
-                //StartRelayConnection();
+                StartRelayConnection();
                 //StartVivoxJoin();
             }
             else
             {
-                //StartRelayConnection();
+                StartRelayConnection();
             }
         }
 
@@ -167,6 +162,47 @@ namespace PathMaker
                     m_relayClient = null;
                 }
             }
+        }
+
+        private void OnFailedJoin()
+        {
+            SetGameState(GameState.JoinMenu);
+        }
+
+
+        private void StartRelayConnection()
+        {
+            if (m_localUser.IsHost)
+                m_relaySetup = gameObject.AddComponent<relay.RelayUtpSetupHost>();
+            else
+                m_relaySetup = gameObject.AddComponent<relay.RelayUtpSetupClient>();
+            m_relaySetup.BeginRelayJoin(m_localLobby, m_localUser, OnRelayConnected);
+
+            void OnRelayConnected(bool didSucceed, relay.RelayUtpClient client)
+            {
+                Component.Destroy(m_relaySetup);
+                m_relaySetup = null;
+
+                if (!didSucceed)
+                {
+                    Debug.LogError("Relay connection failed! Retrying in 5s...");
+                    StartCoroutine(RetryConnection(StartRelayConnection, m_localLobby.LobbyID));
+                    return;
+                }
+
+                m_relayClient = client;
+                if (m_localUser.IsHost)
+                    CompleteRelayConnection();
+                else
+                    Debug.Log("Client is now waiting for approval...");
+            }
+        }
+
+        private IEnumerator RetryConnection(Action doConnection, string lobbyId)
+        {
+            yield return new WaitForSeconds(5);
+            if (m_localLobby != null && m_localLobby.LobbyID == lobbyId && !string.IsNullOrEmpty(lobbyId)) // Ensure we didn't leave the lobby during this waiting period.
+                doConnection?.Invoke();
         }
 
         private void ConfirmApproval()
