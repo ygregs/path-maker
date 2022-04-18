@@ -86,6 +86,30 @@ namespace PathMaker
                     },
                     OnFailedJoin);
             }
+            else if (type == MessageType.JoinLobbyRequest)
+            {
+                LocalLobby.LobbyData lobbyInfo = (LocalLobby.LobbyData)msg;
+                LobbyAsyncRequests.Instance.JoinLobbyAsync(lobbyInfo.LobbyID, lobbyInfo.LobbyCode, m_localUser, (r) =>
+                    {
+                        lobby.ToLocalLobby.Convert(r, m_localLobby);
+                        OnJoinedLobby();
+                    },
+                    OnFailedJoin);
+            }
+            else if (type == MessageType.QueryLobbies)
+            {
+                m_lobbyServiceData.State = LobbyQueryState.Fetching;
+                LobbyAsyncRequests.Instance.RetrieveLobbyListAsync(
+                    qr =>
+                    {
+                        if (qr != null)
+                            OnLobbiesQueried(lobby.ToLocalLobby.Convert(qr));
+                    },
+                    er =>
+                    {
+                        OnLobbyQueryFailed();
+                    });
+            }
             else if (type == MessageType.ClientUserApproved)
             {
                 ConfirmApproval();
@@ -110,6 +134,21 @@ namespace PathMaker
             }
         }
 
+        private void OnLobbiesQueried(IEnumerable<LocalLobby> lobbies)
+        {
+            var newLobbyDict = new Dictionary<string, LocalLobby>();
+            foreach (var lobby in lobbies)
+                newLobbyDict.Add(lobby.LobbyID, lobby);
+
+            m_lobbyServiceData.State = LobbyQueryState.Fetched;
+            m_lobbyServiceData.CurrentLobbies = newLobbyDict;
+        }
+
+        private void OnLobbyQueryFailed()
+        {
+            m_lobbyServiceData.State = LobbyQueryState.Error;
+        }
+
         private void OnCreatedLobby()
         {
             m_localUser.IsHost = true;
@@ -119,7 +158,7 @@ namespace PathMaker
         private void OnJoinedLobby()
         {
             LobbyAsyncRequests.Instance.BeginTracking(m_localLobby.LobbyID);
-            //m_lobbyContentHeartbeat.BeginTracking(m_localLobby, m_localUser);
+            m_lobbyContentHeartbeat.BeginTracking(m_localLobby, m_localUser);
             SetUserLobbyState();
 
             // The host has the opportunity to reject incoming players, but to do so the player needs to connect to Relay without having game logic available.

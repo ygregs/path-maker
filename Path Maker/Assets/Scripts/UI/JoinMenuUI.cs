@@ -54,6 +54,19 @@ namespace PathMaker.UI
                 m_LocalLobbySelected = new LocalLobby.LobbyData(newCode.ToUpper());
         }
 
+        public void OnJoinButtonPressed()
+        {
+            Debug.Log("instance of lobby button try to send joinrequest message.");
+            Locator.Get.Messenger.OnReceiveMessage(MessageType.JoinLobbyRequest, m_LocalLobbySelected);
+            m_LocalLobbySelected = default;
+        }
+
+        public void OnRefresh()
+        {
+            Locator.Get.Messenger.OnReceiveMessage(MessageType.QueryLobbies, null);
+        }
+
+
         public override void ObservedUpdated(LobbyServiceData observed)
         {
             ///Check for new entries, We take CurrentLobbies as the source of truth
@@ -87,7 +100,7 @@ namespace PathMaker.UI
             if (show)
             {
                 m_JoinCodeField.text = "";
-                //OnRefresh();
+                OnRefresh();
             }
         }
 
@@ -99,6 +112,7 @@ namespace PathMaker.UI
         /// Instantiates UI element and initializes the observer with the LobbyData
         private void AddNewLobbyButton(string lobbyCode, LocalLobby lobby)
         {
+            // Debug.Log("adding lobby button to lobby list.");
             var lobbyButtonInstance = Instantiate(m_LobbyButtonPrefab, m_LobbyButtonParent);
             lobbyButtonInstance.GetComponent<LocalLobbyObserver>().BeginObserving(lobby);
             lobby.onDestroyed += RemoveLobbyButton; // Set up to clean itself
