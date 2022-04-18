@@ -25,7 +25,7 @@ namespace PathMaker.UI
         /// UI CallBack
         public void OnLobbyClicked()
         {
-            Debug.Log("lobby clicked !");
+            // Debug.Log("lobby clicked !");
             onLobbyPressed?.Invoke(m_DataObserver.observed);
         }
 

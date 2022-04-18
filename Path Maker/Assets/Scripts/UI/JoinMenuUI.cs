@@ -56,7 +56,7 @@ namespace PathMaker.UI
 
         public void OnJoinButtonPressed()
         {
-            Debug.Log("instance of lobby button try to send joinrequest message.");
+            // Debug.Log("instance of lobby button try to send joinrequest message.");
             Locator.Get.Messenger.OnReceiveMessage(MessageType.JoinLobbyRequest, m_LocalLobbySelected);
             m_LocalLobbySelected = default;
         }
