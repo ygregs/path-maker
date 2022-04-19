@@ -66,7 +66,7 @@ namespace PathMaker.UI
                 case UserStatus.Lobby:
                     return "<color=#56B4E9>In Lobby</color>"; // Light Blue
                 case UserStatus.Ready:
-                    return "<color=#86B951>Ready</color>"; // Light Mint
+                    return "<color=#51FF3D>Ready</color>"; // Light Mint
                 case UserStatus.Connecting:
                     return "<color=#F0E442>Connecting...</color>"; // Bright Yellow
                 case UserStatus.InGame:

@@ -40,6 +40,7 @@ namespace PathMaker
             Provide(new Messenger());
             Provide(new UpdateSlowNoop());
             Provide(new IdentityNoop());
+            Provide(new AuthenticatorNoop());
 
             OnFinishConstruction();
         }
@@ -77,5 +78,8 @@ namespace PathMaker
 
         public IIdentity Identity => Locate<IIdentity>();
         public void Provide(IIdentity identity) { ProvideAny(identity); }
+
+        public IAuthenticator Authenticator => Locate<IAuthenticator>();
+        public void Provide(IAuthenticator authenticator) { ProvideAny(authenticator); }
     }
 }

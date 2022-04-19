@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Authentication;
+
 using UnityEngine;
 
 namespace PathMaker
@@ -33,10 +35,14 @@ namespace PathMaker
 #pragma warning restore IDE0059
 
             Locator.Get.Provide(new Auth.Identity(OnAuthSignIn));
+            // Init authenticator locator
+            Locator.Get.Provide(new Auth.Authenticator());
             Application.wantsToQuit += OnWantToQuit;
         }
         private void Start()
         {
+            RetrieveLogInfo();
+
             m_localLobby = new LocalLobby { State = LobbyState.Lobby };
             m_localUser = new LobbyUser();
             m_localUser.DisplayName = "New Player";
@@ -44,10 +50,29 @@ namespace PathMaker
             BeginObservers();
         }
 
+        private void RetrieveLogInfo()
+        {
+            // Get session cookie and update log status
+            string cookie = PlayerPrefs.GetString("session_cookie");
+            Auth.AuthData authData = Locator.Get.Authenticator.GetAuthData();
+            authData.SetContent("session_cookie", cookie);
+            // Set log status
+            if (!string.IsNullOrEmpty(cookie))
+            {
+                authData.SetContent("log_status", "LOGGED");
+            }
+            else
+            {
+                authData.SetContent("log_status", "NOT_LOGGED");
+            }
+        }
+
         private void OnAuthSignIn()
         {
             Debug.Log("Signed in.");
             m_localUser.ID = Locator.Get.Identity.GetSubIdentity(Auth.IIdentityType.Auth).GetContent("id");
+            // m_localUser.ID = "ceci_est_mon_id";
+            // Debug.Log(AuthenticationService.Instance.PlayerId);
             m_localUser.DisplayName = NameGenerator.GetName(m_localUser.ID);
             m_localLobby.AddPlayer(m_localUser); // The local LobbyUser object will be hooked into UI before the LocalLobby is populated during lobby join, so the LocalLobby must know about it already when that happens.
             //StartVivoxLogin();
