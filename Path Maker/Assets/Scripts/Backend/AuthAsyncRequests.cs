@@ -168,11 +168,17 @@ namespace PathMaker
             {
                 Locator.Get.Messenger.OnReceiveMessage(MessageType.RegisterResponse, request.error);
             }
+            Webservices.ResponseData responseData = Webservices.ResponseData.CreateFromJSON(request.downloadHandler.text);
+            if (responseData.success == null)
+            {
+                // Debug.Log(responseData.success);
+                Locator.Get.Messenger.OnReceiveMessage(MessageType.RegisterResponse, request.downloadHandler.text);
+            }
             else
             {
                 Locator.Get.Messenger.OnReceiveMessage(MessageType.RegisterResponse, "Success");
-                // Debug.Log(request.downloadHandler.text);
             }
+
         }
 
     }

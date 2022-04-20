@@ -390,7 +390,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2943903236606191986}
         m_TargetAssemblyTypeName: PathMaker.UI.BackButtonUI, Assembly-CSharp
-        m_MethodName: ToJoinMenu
+        m_MethodName: ToLoginMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
