@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Core;
 using Unity.Services.Authentication;
 
 using UnityEngine;
@@ -38,13 +39,23 @@ namespace PathMaker
             var unused = Locator.Get;
 #pragma warning restore IDE0059
 
-            Locator.Get.Provide(new Auth.Identity(OnAuthSignIn));
+
+            // InitUnityServices();
+            // UnityServices.InitializeAsync();
+
+
             // Init authenticator locator
+            Locator.Get.Provide(new Auth.Identity(OnAuthSignIn));
             Locator.Get.Provide(new Auth.Authenticator());
+            // Locator.Get.Authenticator.GetAuthData().SetContent("id", "thisisanid");
+
+
             Application.wantsToQuit += OnWantToQuit;
         }
-        private void Start()
+        async private void Start()
         {
+            await UnityServices.InitializeAsync();
+            Debug.Log("start function debug message");
             RetrieveLogInfo();
 
             m_localLobby = new LocalLobby { State = LobbyState.Lobby };
@@ -55,6 +66,9 @@ namespace PathMaker
             {
                 AuthAsyncRequests.Instance.GetPlayerData();
             }
+
+            // m_localUser.ID = Locator.Get.Authenticator.GetAuthData().GetContent("id");
+            // m_localLobby.AddPlayer(m_localUser);
 
             Locator.Get.Messenger.Subscribe(this);
             BeginObservers();
@@ -82,13 +96,22 @@ namespace PathMaker
             }
         }
 
+        // private async void InitUnityServices()
+        // {
+        //     await UnityServices.InitializeAsync();
+        //     await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        //     Locator.Get.Authenticator.GetAuthData().SetContent("id", AuthenticationService.Instance.PlayerId);
+        // }
+
         private void OnAuthSignIn()
         {
-            Debug.Log("Signed in.");
-            m_localUser.ID = Locator.Get.Identity.GetSubIdentity(Auth.IIdentityType.Auth).GetContent("id");
-            // m_localUser.ID = "ceci_est_mon_id";
-            // Debug.Log(AuthenticationService.Instance.PlayerId);
+            //Debug.Log("Signed in.");
+            if (m_authState.State == AState.Login)
+            {
+                m_localUser.ID = Locator.Get.Identity.GetSubIdentity(Auth.IIdentityType.Auth).GetContent("id");
+            }
             //m_localUser.DisplayName = NameGenerator.GetName(m_localUser.ID);
+            // m_localUser.ID = Locator.Get.Authenticator.GetAuthData().GetContent("id");
             m_localLobby.AddPlayer(m_localUser); // The local LobbyUser object will be hooked into UI before the LocalLobby is populated during lobby join, so the LocalLobby must know about it already when that happens.
             //StartVivoxLogin();
         }

@@ -115,7 +115,8 @@ namespace PathMaker
                 return;
             }
 
-            string uasId = AuthenticationService.Instance.PlayerId;
+            // string uasId = AuthenticationService.Instance.PlayerId;
+            string uasId = Locator.Get.Authenticator.GetAuthData().GetContent("id"); ;
             LobbyAPIInterface.CreateLobbyAsync(uasId, lobbyName, maxPlayers, isPrivate, CreateInitialPlayerData(localUser), OnLobbyCreated);
 
             void OnLobbyCreated(Lobby response)
@@ -140,7 +141,8 @@ namespace PathMaker
                 return;
             }
 
-            string uasId = AuthenticationService.Instance.PlayerId;
+            // string uasId = AuthenticationService.Instance.PlayerId;
+            string uasId = Locator.Get.Authenticator.GetAuthData().GetContent("id"); ;
             if (!string.IsNullOrEmpty(lobbyId))
                 LobbyAPIInterface.JoinLobbyAsync_ById(uasId, lobbyId, CreateInitialPlayerData(localUser), OnLobbyJoined);
             else
@@ -169,7 +171,8 @@ namespace PathMaker
 
             // var filters = LobbyColorToFilters(limitToColor);
             var filters = new List<QueryFilter>();
-            string uasId = AuthenticationService.Instance.PlayerId;
+            // string uasId = AuthenticationService.Instance.PlayerId;
+            string uasId = Locator.Get.Authenticator.GetAuthData().GetContent("id"); ;
             LobbyAPIInterface.QuickJoinLobbyAsync(uasId, filters, CreateInitialPlayerData(localUser), OnLobbyJoined);
 
             void OnLobbyJoined(Lobby response)
@@ -232,7 +235,8 @@ namespace PathMaker
         /// <param name="onComplete">Called once the request completes, regardless of success or failure.</param>
         public void LeaveLobbyAsync(string lobbyId, Action onComplete)
         {
-            string uasId = AuthenticationService.Instance.PlayerId;
+            // string uasId = AuthenticationService.Instance.PlayerId;
+            string uasId = Locator.Get.Authenticator.GetAuthData().GetContent("id"); ;
             LobbyAPIInterface.LeaveLobbyAsync(uasId, lobbyId, OnLeftLobby);
 
             void OnLeftLobby()
@@ -249,7 +253,8 @@ namespace PathMaker
             if (!ShouldUpdateData(() => { UpdatePlayerDataAsync(data, onComplete); }, onComplete, false))
                 return;
 
-            string playerId = Locator.Get.Identity.GetSubIdentity(Auth.IIdentityType.Auth).GetContent("id");
+            // string playerId = Locator.Get.Identity.GetSubIdentity(Auth.IIdentityType.Auth).GetContent("id");
+            string playerId = Locator.Get.Authenticator.GetAuthData().GetContent("id");
             Dictionary<string, PlayerDataObject> dataCurr = new Dictionary<string, PlayerDataObject>();
             foreach (var dataNew in data)
             {
@@ -275,7 +280,8 @@ namespace PathMaker
         {
             if (!ShouldUpdateData(() => { UpdatePlayerRelayInfoAsync(allocationId, onComplete); }, onComplete, true)) // Do retry here since the RelayUtpSetup that called this might be destroyed right after this.
                 return;
-            string playerId = Locator.Get.Identity.GetSubIdentity(Auth.IIdentityType.Auth).GetContent("id");
+            // string playerId = Locator.Get.Identity.GetSubIdentity(Auth.IIdentityType.Auth).GetContent("id");
+            string playerId = Locator.Get.Authenticator.GetAuthData().GetContent("id");
             LobbyAPIInterface.UpdatePlayerAsync(m_lastKnownLobby.Id, playerId, new Dictionary<string, PlayerDataObject>(), (r) => { onComplete?.Invoke(); }, allocationId);
         }
 

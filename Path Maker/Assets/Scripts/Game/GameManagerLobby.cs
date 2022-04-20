@@ -21,12 +21,16 @@ namespace PathMaker
         {
             // Authenticate
             await UnityServices.InitializeAsync();
+            // await InitializeUnityServices();
+            Debug.Log("debug message after services init");
             if (!AuthenticationService.Instance.IsSignedIn)
             {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
             }
             QueryAllLobbies();
         }
+
+
 
         void OnGUI()
         {
@@ -94,7 +98,7 @@ namespace PathMaker
             CreateLobbyOptions options = new CreateLobbyOptions()
             {
                 IsPrivate = false,
-                //Player = new Unity.Services.Lobbies.Models.Player(AuthenticationService.Instance.PlayerId)
+                Player = new Unity.Services.Lobbies.Models.Player("testid")
             };
 
             Lobby lobby = await Lobbies.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
@@ -134,7 +138,8 @@ namespace PathMaker
 
         private async void LeaveLobby()
         {
-            string playerId = AuthenticationService.Instance.PlayerId;
+            // string playerId = AuthenticationService.Instance.PlayerId;
+            string playerId = "testid";
             while (createdLobbyIds.TryDequeue(out var lobbyId))
             {
                 await Lobbies.Instance.RemovePlayerAsync(lobbyId, playerId);
