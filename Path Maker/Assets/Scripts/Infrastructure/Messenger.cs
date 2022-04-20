@@ -101,6 +101,12 @@ namespace PathMaker
         InstructionsShown = 204,
         MinigameEnding = 205,
 
+        LoginResponse = 206,
+
+        LogoutResponse = 207,
+
+        ChangeAuthState = 208,
+
         DisplayErrorPopup = 300,
     }
 

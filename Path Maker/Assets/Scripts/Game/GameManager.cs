@@ -18,7 +18,11 @@ namespace PathMaker
         [SerializeField]
         private List<LobbyServiceDataObserver> m_LobbyServiceObservers = new List<LobbyServiceDataObserver>();
 
+        [SerializeField]
+        private List<AuthStateObserver> m_AuthStateObservers = new List<AuthStateObserver>();
+
         private LocalGameState m_localGameState = new LocalGameState();
+        private AuthState m_authState = new AuthState();
         private LobbyUser m_localUser;
         private LocalLobby m_localLobby;
 
@@ -45,7 +49,13 @@ namespace PathMaker
 
             m_localLobby = new LocalLobby { State = LobbyState.Lobby };
             m_localUser = new LobbyUser();
-            m_localUser.DisplayName = "New Player";
+            m_localUser.DisplayName = "Guest";
+
+            if (m_authState.State == AState.Login)
+            {
+                AuthAsyncRequests.Instance.GetPlayerData();
+            }
+
             Locator.Get.Messenger.Subscribe(this);
             BeginObservers();
         }
@@ -54,16 +64,21 @@ namespace PathMaker
         {
             // Get session cookie and update log status
             string cookie = PlayerPrefs.GetString("session_cookie");
+            Debug.Log(cookie);
             Auth.AuthData authData = Locator.Get.Authenticator.GetAuthData();
             authData.SetContent("session_cookie", cookie);
             // Set log status
             if (!string.IsNullOrEmpty(cookie))
             {
                 authData.SetContent("log_status", "LOGGED");
+                // Debug.Log("Retrieving session cookie: logged");
+                m_authState.State = AState.Login;
             }
             else
             {
                 authData.SetContent("log_status", "NOT_LOGGED");
+                // Debug.Log("Retrieving session cookie: not logged");
+                m_authState.State = AState.Logout;
             }
         }
 
@@ -73,7 +88,7 @@ namespace PathMaker
             m_localUser.ID = Locator.Get.Identity.GetSubIdentity(Auth.IIdentityType.Auth).GetContent("id");
             // m_localUser.ID = "ceci_est_mon_id";
             // Debug.Log(AuthenticationService.Instance.PlayerId);
-            m_localUser.DisplayName = NameGenerator.GetName(m_localUser.ID);
+            //m_localUser.DisplayName = NameGenerator.GetName(m_localUser.ID);
             m_localLobby.AddPlayer(m_localUser); // The local LobbyUser object will be hooked into UI before the LocalLobby is populated during lobby join, so the LocalLobby must know about it already when that happens.
             //StartVivoxLogin();
         }
@@ -95,6 +110,10 @@ namespace PathMaker
             foreach (var userObs in m_LocalUserObservers)
             {
                 userObs.BeginObserving(m_localUser);
+            }
+            foreach (var authStateObs in m_AuthStateObservers)
+            {
+                authStateObs.BeginObserving(m_authState);
             }
         }
 
@@ -147,6 +166,20 @@ namespace PathMaker
             {
                 SetGameState((GameState)msg);
             }
+            else if (type == MessageType.ChangeAuthState)
+            {
+                SetAuthState((AState)msg);
+            }
+            else if (type == MessageType.RenameRequest)
+            {
+                string name = (string)msg;
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    Locator.Get.Messenger.OnReceiveMessage(MessageType.DisplayErrorPopup, "Empty Name not allowed."); // Lobby error type, then HTTP error type.
+                    return;
+                }
+                m_localUser.DisplayName = (string)msg;
+            }
         }
 
         private void SetGameState(GameState state)
@@ -157,6 +190,11 @@ namespace PathMaker
             {
                 OnLeftLobby();
             }
+        }
+
+        private void SetAuthState(AState state)
+        {
+            m_authState.State = state;
         }
 
         private void OnLobbiesQueried(IEnumerable<LocalLobby> lobbies)

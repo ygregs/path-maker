@@ -4,20 +4,18 @@ namespace PathMaker
 {
 
     [Flags]
-    public enum GameState
+    public enum AState
     {
-        Menu = 1,
-        Lobby = 2,
-        JoinMenu = 4,
-        LoginMenu = 8,
+        Login = 1,
+        Logout = 2,
     }
 
     [System.Serializable]
-    public class LocalGameState : Observed<LocalGameState>
+    public class AuthState : Observed<AuthState>
     {
-        private GameState m_State = GameState.Menu;
+        private AState m_State = AState.Logout;
 
-        public GameState State
+        public AState State
         {
             get => m_State;
             set
@@ -30,7 +28,7 @@ namespace PathMaker
             }
         }
 
-        public override void CopyObserved(LocalGameState oldObserved)
+        public override void CopyObserved(AuthState oldObserved)
         {
             if (m_State == oldObserved.State)
             {
