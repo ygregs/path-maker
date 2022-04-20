@@ -39,23 +39,13 @@ namespace PathMaker
             var unused = Locator.Get;
 #pragma warning restore IDE0059
 
-
-            // InitUnityServices();
-            // UnityServices.InitializeAsync();
-
-
-            // Init authenticator locator
-            Locator.Get.Provide(new Auth.Identity(OnAuthSignIn));
+            InitUnityService(OnAuthSignIn);
             Locator.Get.Provide(new Auth.Authenticator());
-            // Locator.Get.Authenticator.GetAuthData().SetContent("id", "thisisanid");
-
 
             Application.wantsToQuit += OnWantToQuit;
         }
-        async private void Start()
+        private void Start()
         {
-            await UnityServices.InitializeAsync();
-            Debug.Log("start function debug message");
             RetrieveLogInfo();
 
             m_localLobby = new LocalLobby { State = LobbyState.Lobby };
@@ -66,9 +56,6 @@ namespace PathMaker
             {
                 AuthAsyncRequests.Instance.GetPlayerData();
             }
-
-            // m_localUser.ID = Locator.Get.Authenticator.GetAuthData().GetContent("id");
-            // m_localLobby.AddPlayer(m_localUser);
 
             Locator.Get.Messenger.Subscribe(this);
             BeginObservers();
@@ -81,7 +68,7 @@ namespace PathMaker
             Debug.Log(cookie);
             Auth.AuthData authData = Locator.Get.Authenticator.GetAuthData();
             authData.SetContent("session_cookie", cookie);
-            // Set log status
+
             if (!string.IsNullOrEmpty(cookie))
             {
                 authData.SetContent("log_status", "LOGGED");
@@ -96,22 +83,30 @@ namespace PathMaker
             }
         }
 
-        // private async void InitUnityServices()
-        // {
-        //     await UnityServices.InitializeAsync();
-        //     await AuthenticationService.Instance.SignInAnonymouslyAsync();
-        //     Locator.Get.Authenticator.GetAuthData().SetContent("id", AuthenticationService.Instance.PlayerId);
-        // }
+        private async void InitUnityService(Action onSigninComplete)
+        {
+            await UnityServices.InitializeAsync();
 
+            try
+            {
+                if (!AuthenticationService.Instance.IsSignedIn)
+                    await AuthenticationService.Instance.SignInAnonymouslyAsync(); // Don't sign out later, since that changes the anonymous token, which would prevent the player from exiting lobbies they're already in.
+                onSigninComplete?.Invoke();
+            }
+            catch
+            {
+                UnityEngine.Debug.LogError("Failed to login. Did you remember to set your Project ID under Services > General Settings?");
+                throw;
+            }
+        }
         private void OnAuthSignIn()
         {
-            //Debug.Log("Signed in.");
             if (m_authState.State == AState.Login)
             {
-                m_localUser.ID = Locator.Get.Identity.GetSubIdentity(Auth.IIdentityType.Auth).GetContent("id");
+                m_localUser.ID = AuthenticationService.Instance.PlayerId;
+                Locator.Get.Authenticator.GetAuthData().SetContent("id", AuthenticationService.Instance.PlayerId);
             }
             //m_localUser.DisplayName = NameGenerator.GetName(m_localUser.ID);
-            // m_localUser.ID = Locator.Get.Authenticator.GetAuthData().GetContent("id");
             m_localLobby.AddPlayer(m_localUser); // The local LobbyUser object will be hooked into UI before the LocalLobby is populated during lobby join, so the LocalLobby must know about it already when that happens.
             //StartVivoxLogin();
         }
