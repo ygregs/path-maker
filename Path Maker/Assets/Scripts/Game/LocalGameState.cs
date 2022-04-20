@@ -10,6 +10,7 @@ namespace PathMaker
         Lobby = 2,
         JoinMenu = 4,
         LoginMenu = 8,
+        RegisterMenu = 16,
     }
 
     [System.Serializable]

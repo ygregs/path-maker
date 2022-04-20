@@ -140,5 +140,40 @@ namespace PathMaker
             }
         }
 
+        public void RegisterNewPlayer(string playername, string password)
+        {
+            if (!string.IsNullOrEmpty(playername) && !string.IsNullOrEmpty(password))
+            {
+                StartCoroutine(RegisterNewPlayerRequest(playername, password));
+            }
+            else
+            {
+                Locator.Get.Messenger.OnReceiveMessage(MessageType.RegisterResponse, "Playername and password must be not empty.");
+            }
+        }
+        private IEnumerator RegisterNewPlayerRequest(string playername, string password)
+        {
+            var player = new User
+            {
+                playername = playername,
+                password = password
+            };
+            // Delete cookie before requesting a new register
+            Webservices.CookieString = null;
+
+            var request = Webservices.Post("api/auth/register", JsonUtility.ToJson(player));
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Locator.Get.Messenger.OnReceiveMessage(MessageType.RegisterResponse, request.error);
+            }
+            else
+            {
+                Locator.Get.Messenger.OnReceiveMessage(MessageType.RegisterResponse, "Success");
+                // Debug.Log(request.downloadHandler.text);
+            }
+        }
+
     }
 }

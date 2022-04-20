@@ -14,5 +14,9 @@ namespace PathMaker.UI
         {
             Locator.Get.Messenger.OnReceiveMessage(MessageType.ChangeGameState, GameState.Menu);
         }
+        public void ToLoginMenu()
+        {
+            Locator.Get.Messenger.OnReceiveMessage(MessageType.ChangeGameState, GameState.LoginMenu);
+        }
     }
 }

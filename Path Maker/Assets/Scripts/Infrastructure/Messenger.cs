@@ -105,7 +105,9 @@ namespace PathMaker
 
         LogoutResponse = 207,
 
+
         ChangeAuthState = 208,
+        RegisterResponse = 209,
 
         DisplayErrorPopup = 300,
     }
