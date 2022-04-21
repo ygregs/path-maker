@@ -11,6 +11,7 @@ namespace PathMaker
         JoinMenu = 4,
         LoginMenu = 8,
         RegisterMenu = 16,
+        InGame = 32,
     }
 
     [System.Serializable]

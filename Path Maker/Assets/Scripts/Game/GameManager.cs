@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Services.Core;
 using Unity.Services.Authentication;
+using UnityEngine.SceneManagement;
 
 using UnityEngine;
 
@@ -101,9 +102,9 @@ namespace PathMaker
         }
         private void OnAuthSignIn()
         {
+            m_localUser.ID = AuthenticationService.Instance.PlayerId;
             if (m_authState.State == AState.Login)
             {
-                m_localUser.ID = AuthenticationService.Instance.PlayerId;
                 Locator.Get.Authenticator.GetAuthData().SetContent("id", AuthenticationService.Instance.PlayerId);
             }
             //m_localUser.DisplayName = NameGenerator.GetName(m_localUser.ID);
@@ -197,6 +198,21 @@ namespace PathMaker
                     return;
                 }
                 m_localUser.DisplayName = (string)msg;
+            }
+            else if (type == MessageType.CompleteCountdown)
+            {
+                if (m_relayClient is relay.RelayUtpHost)
+                    (m_relayClient as relay.RelayUtpHost).SendInGameState();
+            }
+            else if (type == MessageType.ConfirmInGameState)
+            {
+                m_localUser.UserStatus = UserStatus.InGame;
+                m_localLobby.State = LobbyState.InGame;
+                // SetGameState((GameState)GameState.InGame);
+                // SetupGameScene.localUser = m_localUser;
+                // SetupGameScene.lobby = m_localLobby;
+                // SceneManager.LoadScene("testGameScene");
+                // SceneManager.LoadScene("testGameScene", LoadSceneMode.Additive);
             }
         }
 

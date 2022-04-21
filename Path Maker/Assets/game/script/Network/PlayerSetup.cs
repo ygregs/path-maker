@@ -7,7 +7,7 @@ public class PlayerSetup : NetworkBehaviour
 {
     [SerializeField]
     Behaviour[] componentsToDisable;
-    private void Start()
+    private void Update()
     {
         if (!IsLocalPlayer)
         {
