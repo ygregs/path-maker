@@ -13,7 +13,7 @@ namespace PathMaker.ngo
     public class SetupInGame : MonoBehaviour, IReceiveMessages
     {
         [SerializeField] private GameObject m_prefabNetworkManager = default;
-        [SerializeField] private GameObject m_prefabHelloWorldManager = default;
+        // [SerializeField] private GameObject m_prefabHelloWorldManager = default;
         [SerializeField] private GameObject[] m_disableWhileInGame = default;
 
         private GameObject m_inGameManagerObj;
@@ -50,7 +50,7 @@ namespace PathMaker.ngo
         private void CreateNetworkManager()
         {
             m_inGameManagerObj = GameObject.Instantiate(m_prefabNetworkManager);
-            GameObject.Instantiate(m_prefabHelloWorldManager);
+            // GameObject.Instantiate(m_prefabHelloWorldManager);
             m_networkManager = m_inGameManagerObj.GetComponent<NetworkManager>();
             // m_inGameRunner = m_inGameManagerObj.GetComponentInChildren<InGameRunner>();
             // m_inGameRunner.Initialize(OnConnectionVerified, m_lobby.PlayerCount, OnGameEnd, m_localUser);

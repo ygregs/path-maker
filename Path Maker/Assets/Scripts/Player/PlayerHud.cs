@@ -1,22 +1,42 @@
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using Unity.Collections;
 
 namespace PathMaker
 {
+
     public class PlayerHud : NetworkBehaviour
     {
         [SerializeField]
-        private NetworkVariable<NetworkString> playerNetworkName = new NetworkVariable<NetworkString>();
+        private NetworkVariable<FixedString128Bytes> playerNetworkName = new NetworkVariable<FixedString128Bytes>();
 
         private bool overlaySet = false;
 
         public override void OnNetworkSpawn()
         {
-            if (IsServer)
+            if (IsOwner)
             {
-                playerNetworkName.Value = $"Player {Locator.Get.Authenticator.GetAuthData().GetContent("playername")}";
+                SetName();
             }
+        }
+
+        public void SetName()
+        {
+            if (NetworkManager.Singleton.IsServer)
+            {
+                playerNetworkName.Value = Locator.Get.Authenticator.GetAuthData().GetContent("playername");
+            }
+            else
+            {
+                SubmitNameRequestServerRpc(Locator.Get.Authenticator.GetAuthData().GetContent("playername"));
+            }
+        }
+
+        [ServerRpc]
+        void SubmitNameRequestServerRpc(string playername)
+        {
+            playerNetworkName.Value = playername;
         }
 
         public void SetOverlay()
@@ -27,7 +47,7 @@ namespace PathMaker
 
         public void Update()
         {
-            if (!overlaySet && !string.IsNullOrEmpty(playerNetworkName.Value))
+            if (!overlaySet && !string.IsNullOrEmpty(playerNetworkName.Value.ToString()))
             {
                 SetOverlay();
                 overlaySet = true;

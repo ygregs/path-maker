@@ -23,7 +23,7 @@ public class PlayerControlAuthorative : NetworkBehaviour
 
     private CharacterController characterController;
 
-    private Animator animator;
+    // private Animator animator;
 
     // client caches animation states
     private PlayerState oldPlayerState = PlayerState.Idle;
@@ -31,7 +31,7 @@ public class PlayerControlAuthorative : NetworkBehaviour
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        animator = GetComponent<Animator>();
+        // animator = GetComponent<Animator>();
     }
 
     void Start()
@@ -42,6 +42,9 @@ public class PlayerControlAuthorative : NetworkBehaviour
                    Random.Range(defaultInitialPositionOnPlane.x, defaultInitialPositionOnPlane.y));
             PlayerCameraFollow.Instance.FollowPlayer(transform.Find("PlayerCameraRoot"));
         }
+        var playerObject = NetworkManager.Singleton?.SpawnManager.GetLocalPlayerObject();
+        var player = playerObject?.GetComponent<PathMaker.PlayerHud>();
+        player.SetName();
     }
 
     void Update()
@@ -60,7 +63,7 @@ public class PlayerControlAuthorative : NetworkBehaviour
         if (oldPlayerState != networkPlayerState.Value)
         {
             oldPlayerState = networkPlayerState.Value;
-            animator.SetTrigger($"{networkPlayerState.Value}");
+            // animator.SetTrigger($"{networkPlayerState.Value}");
         }
     }
 

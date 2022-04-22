@@ -138,6 +138,7 @@ namespace PathMaker
                 ResponsePlayer responsePlayer = ResponsePlayer.CreateFromJSON(request.downloadHandler.text);
                 Locator.Get.Messenger.OnReceiveMessage(MessageType.RenameRequest, responsePlayer.playername);
                 Locator.Get.Authenticator.GetAuthData().SetContent("_id", responsePlayer._id);
+                Locator.Get.Authenticator.GetAuthData().SetContent("playername", responsePlayer.playername);
             }
         }
 
