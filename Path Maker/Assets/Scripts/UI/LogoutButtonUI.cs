@@ -11,7 +11,7 @@ namespace PathMaker.UI
 
         public void OnReceiveMessage(MessageType type, object msg)
         {
-            print($"Receive message of type {type} : \"{msg}\"");
+            // print($"Receive message of type {type} : \"{msg}\"");
             if (type == MessageType.LogoutResponse)
             {
                 if ((string)msg == "LOGOUT")

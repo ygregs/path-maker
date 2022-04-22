@@ -10,11 +10,11 @@ using Unity.Netcode.Samples;
 public class PlayerControlAutorativ : NetworkBehaviour
 {
 
-  
+
     public CharacterController characterController;
     public Transform cam;
     public float turnSmoothTime = 0.1f;
-  
+
 
     [SerializeField]
     private float speed = 3.5f;
@@ -23,7 +23,7 @@ public class PlayerControlAutorativ : NetworkBehaviour
     private float rotationSpeed = 1.5f;
 
     //jump
- 
+
     public float jumpSpeed;
 
     private float ySpeed;
@@ -38,15 +38,15 @@ public class PlayerControlAutorativ : NetworkBehaviour
     void Start()
     {
         // Respawn.respawn();
-        PlayerCameraFollow.Instance.FollowPlayer(transform.Find("player"));
+        PlayerCameraFollowTest.Instance.FollowPlayer(transform.Find("player"));
     }
 
     private void Update()
     {
-        if(IsClient && IsOwner)
+        if (IsClient && IsOwner)
         {
 
-            // déplacement du joueur de maniere hoizontal
+            // dï¿½placement du joueur de maniere hoizontal
             Vector3 inputRotation = new Vector3(0, Input.GetAxis("Horizontal"), 0);
 
             Vector3 direction = transform.TransformDirection(Vector3.forward);
@@ -54,7 +54,7 @@ public class PlayerControlAutorativ : NetworkBehaviour
             float forwardInput = Input.GetAxis("Vertical");
             if (Input.GetKey(KeyCode.LeftShift) && forwardInput > 0) forwardInput = 2;
 
-            //aplication de la gravité 
+            //aplication de la gravitï¿½ 
             ySpeed += Physics.gravity.y * Time.deltaTime;
 
             if (characterController.isGrounded)
@@ -63,7 +63,7 @@ public class PlayerControlAutorativ : NetworkBehaviour
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     Debug.Log("jump");
-                    
+
                     ySpeed = jumpSpeed;
                 }
             }
@@ -72,21 +72,21 @@ public class PlayerControlAutorativ : NetworkBehaviour
             Vector3 velocity = inputPosition * speed;
 
             velocity.y = ySpeed;
-            
-            
+
+
 
             characterController.Move(velocity * Time.deltaTime);
 
             transform.Rotate(inputRotation * rotationSpeed, Space.World);
 
-            
+
 
         }
-  
+
     }
     private void ClientInput()
     {
-        Vector3 inputRotation = new Vector3(0, Input.GetAxis("Horizontal"),0);
+        Vector3 inputRotation = new Vector3(0, Input.GetAxis("Horizontal"), 0);
 
         Vector3 direction = transform.TransformDirection(Vector3.forward);
         float forwardInput = Input.GetAxis("Vertical");
@@ -101,7 +101,7 @@ public class PlayerControlAutorativ : NetworkBehaviour
 
     }
 
-    
+
 
 }
 

@@ -138,7 +138,7 @@ namespace PathMaker
 
         public void OnReceiveMessage(MessageType type, object msg)
         {
-            print($"Receive message of type {type} : \"{msg}\"");
+            // print($"Receive message of type {type} : \"{msg}\"");
             if (type == MessageType.CreateLobbyRequest)
             {
                 LocalLobby.LobbyData createLobbyData = (LocalLobby.LobbyData)msg;

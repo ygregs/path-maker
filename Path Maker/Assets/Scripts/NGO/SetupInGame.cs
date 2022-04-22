@@ -56,7 +56,6 @@ namespace PathMaker.ngo
             // m_inGameRunner.Initialize(OnConnectionVerified, m_lobby.PlayerCount, OnGameEnd, m_localUser);
 
             UnityTransport transport = m_inGameManagerObj.GetComponent<UnityTransport>();
-            Debug.Log("user is host:" + m_localUser.IsHost.ToString());
             if (m_localUser.IsHost)
             {
                 m_inGameManagerObj.AddComponent<RelayUtpNGOSetupHost>().Initialize(this, m_lobby, () => { m_initializeTransport(transport); m_networkManager.StartHost(); });
@@ -93,10 +92,7 @@ namespace PathMaker.ngo
             if (type == MessageType.ConfirmInGameState)
             {
                 m_doesNeedCleanup = true;
-                Debug.Log("we are here");
                 SetMenuVisibility(false);
-                // SceneManager.LoadScene("gameScene");
-                // Debug.Log("trying to load gameScene");
                 CreateNetworkManager();
             }
 

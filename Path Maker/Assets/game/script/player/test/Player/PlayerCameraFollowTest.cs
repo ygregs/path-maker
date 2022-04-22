@@ -4,14 +4,14 @@ using UnityEngine;
 using DilmerGames.Core.Singletons;
 using Cinemachine;
 
-public class PlayerCameraFollow : Singleton<PlayerCameraFollow>
+public class PlayerCameraFollowTest : Singleton<PlayerCameraFollowTest>
 {
     private CinemachineVirtualCamera cinemachineVirtualCamera;
     void Awake()
     {
         cinemachineVirtualCamera = GetComponent<CinemachineVirtualCamera>();
     }
-    public void FollowPlayer (Transform transform)
+    public void FollowPlayer(Transform transform)
     {
         cinemachineVirtualCamera.Follow = transform;
     }

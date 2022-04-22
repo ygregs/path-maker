@@ -18,7 +18,7 @@ namespace PathMaker
 
         public void OnReceiveMessage(MessageType type, object msg)
         {
-            print($"Receive message of type {type} : \"{msg}\"");
+            // print($"Receive message of type {type} : \"{msg}\"");
             if (type == MessageType.RegisterResponse)
             {
                 if ((string)msg == "Success")
