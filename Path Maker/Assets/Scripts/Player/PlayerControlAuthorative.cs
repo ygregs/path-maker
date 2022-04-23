@@ -23,7 +23,7 @@ public class PlayerControlAuthorative : NetworkBehaviour
 
     private CharacterController characterController;
 
-    // private Animator animator;
+    private Animator animator;
 
     // client caches animation states
     private PlayerState oldPlayerState = PlayerState.Idle;
@@ -31,7 +31,7 @@ public class PlayerControlAuthorative : NetworkBehaviour
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        // animator = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
     }
 
     void Start()
@@ -43,8 +43,8 @@ public class PlayerControlAuthorative : NetworkBehaviour
             PlayerCameraFollow.Instance.FollowPlayer(transform.Find("PlayerCameraRoot"));
         }
         var playerObject = NetworkManager.Singleton?.SpawnManager.GetLocalPlayerObject();
-        var player = playerObject?.GetComponent<PathMaker.PlayerHud>();
-        player.SetName();
+        // var player = playerObject?.GetComponent<PathMaker.PlayerHud>();
+        // player.SetName();
     }
 
     void Update()
@@ -63,7 +63,7 @@ public class PlayerControlAuthorative : NetworkBehaviour
         if (oldPlayerState != networkPlayerState.Value)
         {
             oldPlayerState = networkPlayerState.Value;
-            // animator.SetTrigger($"{networkPlayerState.Value}");
+            animator.SetTrigger($"{networkPlayerState.Value}");
         }
     }
 
@@ -88,7 +88,8 @@ public class PlayerControlAuthorative : NetworkBehaviour
             UpdatePlayerStateServerRpc(PlayerState.Run);
         }
         else if (forwardInput < 0)
-            UpdatePlayerStateServerRpc(PlayerState.ReverseWalk);
+            // UpdatePlayerStateServerRpc(PlayerState.ReverseWalk);
+            UpdatePlayerStateServerRpc(PlayerState.Walk);
 
         // client is responsible for moving itself
         characterController.SimpleMove(inputPosition * walkSpeed);
