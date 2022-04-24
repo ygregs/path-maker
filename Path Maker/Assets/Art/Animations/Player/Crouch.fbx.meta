@@ -1,14 +1,14 @@
 fileFormatVersion: 2
-guid: 787eddebd5680e64893f21b988013303
+guid: 4537f205aba73d043895d78635564d61
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
   - first:
       74: -887982601649841707
-    second: metarig|metarigAction
+    second: Crouch
   - first:
       74: -203655887218126122
-    second: mixamo.com
+    second: Crouch (1)
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -38,7 +38,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: metarig|metarigAction
+      name: Crouch
       takeName: metarig|metarigAction
       internalID: 0
       firstFrame: 0
@@ -49,7 +49,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -67,18 +67,18 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: mixamo.com
+      name: Crouch (1)
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 201
+      lastFrame: 33
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

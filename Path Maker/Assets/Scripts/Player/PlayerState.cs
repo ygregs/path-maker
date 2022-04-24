@@ -4,7 +4,9 @@ public enum PlayerState
     Walk,
     Run,
     Jump,
-    Crouch,
+    IdleCrouch,
+    WalkCrouch,
+    RunCrouch,
     // Punch,
     // ReverseWalk,
 }

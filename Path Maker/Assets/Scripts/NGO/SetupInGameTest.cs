@@ -20,7 +20,7 @@ namespace PathMaker.ngo
         // private InGameRunner m_inGameRunner;
 
         private bool m_doesNeedCleanup = false;
-        private bool m_hasConnectedViaNGO = false;
+        // private bool m_hasConnectedViaNGO = false;
 
         private Action<UnityTransport> m_initializeTransport;
         private LocalLobby m_lobby;

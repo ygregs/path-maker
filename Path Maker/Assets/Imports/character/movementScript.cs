@@ -5,25 +5,27 @@ using UnityEngine;
 public class movementScript : MonoBehaviour
 {
     public Animator anim;
-    
+
     private bool run = false;
     private bool crouch = false;
     private bool jump = false;
     private float Frun;
-    
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.LeftShift)){
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
             run = !run;
         }
-        if(Input.GetKeyDown(KeyCode.LeftControl)){
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
             crouch = !crouch;
         }
 
@@ -35,10 +37,12 @@ public class movementScript : MonoBehaviour
 
         Frun = Input.GetAxis("Vertical") * 2;
 
-        if(run){
+        if (run)
+        {
             anim.SetFloat("vertical", Frun);
         }
-        else{
+        else
+        {
             anim.SetFloat("vertical", Input.GetAxis("Vertical"));
         }
 
