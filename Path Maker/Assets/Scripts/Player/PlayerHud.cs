@@ -39,10 +39,19 @@ namespace PathMaker
             playerNetworkName.Value = playername;
         }
 
+
         public void SetOverlay()
         {
             var localPlayerOverlay = gameObject.GetComponentInChildren<TextMeshProUGUI>();
-            localPlayerOverlay.text = $"{playerNetworkName.Value}";
+            var locaPlayerTeam = gameObject.GetComponentInChildren<TeamLogic>();
+            if (locaPlayerTeam.playerNetworkTeam.Value == TeamState.AsianTeam)
+            {
+                localPlayerOverlay.text = $"[<color=#953A3A>Asian Team</color>] {playerNetworkName.Value}";
+            }
+            else
+            {
+                localPlayerOverlay.text = $"[<color=#9BCCFF>Greek Team</color>] {playerNetworkName.Value}";
+            }
         }
 
         public void Update()

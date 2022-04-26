@@ -41,6 +41,7 @@ namespace PathMaker
             Provide(new UpdateSlowNoop());
             // Provide(new IdentityNoop());
             Provide(new AuthenticatorNoop());
+            Provide(new ngo.InGameInputHandlerNoop());
 
             OnFinishConstruction();
         }
@@ -81,5 +82,8 @@ namespace PathMaker
 
         public IAuthenticator Authenticator => Locate<IAuthenticator>();
         public void Provide(IAuthenticator authenticator) { ProvideAny(authenticator); }
+        public ngo.IInGameInputHandler InGameInputHandler => Locate<ngo.IInGameInputHandler>();
+        public void Provide(ngo.IInGameInputHandler inputHandler) { ProvideAny(inputHandler); }
+
     }
 }

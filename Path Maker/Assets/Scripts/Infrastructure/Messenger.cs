@@ -110,6 +110,9 @@ namespace PathMaker
         RegisterResponse = 209,
 
         DisplayErrorPopup = 300,
+
+        LobbyUserTeam = 301,
+        SpawnPlayer = 302,
     }
 
     public interface IReceiveMessages

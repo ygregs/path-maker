@@ -1,9 +1,8 @@
 using Unity.Netcode;
-using Unity.Netcode.Samples;
 using UnityEngine;
 
 [RequireComponent(typeof(NetworkObject))]
-[RequireComponent(typeof(ClientNetworkTransform))]
+// [RequireComponent(typeof(Unity.Netcode.Samples.ClientNetworkTransform))]
 public class PlayerControlAuthorative : NetworkBehaviour
 {
     [SerializeField]
@@ -49,14 +48,19 @@ public class PlayerControlAuthorative : NetworkBehaviour
 
     void Start()
     {
-        if (IsClient && IsOwner)
-        {
-            transform.position = new Vector3(Random.Range(defaultInitialPositionOnPlane.x, defaultInitialPositionOnPlane.y), 0,
-                   Random.Range(defaultInitialPositionOnPlane.x, defaultInitialPositionOnPlane.y));
-        }
+        // if (IsClient && IsOwner)
+        // {
+        //     transform.position = new Vector3(Random.Range(defaultInitialPositionOnPlane.x, defaultInitialPositionOnPlane.y), 0,
+        //            Random.Range(defaultInitialPositionOnPlane.x, defaultInitialPositionOnPlane.y));
+        // }
         var playerObject = NetworkManager.Singleton?.SpawnManager.GetLocalPlayerObject();
         var player = playerObject?.GetComponent<PathMaker.PlayerHud>();
-        player.SetName();
+        player?.SetName();
+        // var ingamerunner = GameObject.Find("InGameRunner").GetComponent<PathMaker.ngo.InGameRunner>();
+        // ingamerunner.localPlayer = gameObject;
+        // ingamerunner.SpawnLocalPlayer();
+        // ingamerunner.SpawnClientRpc();
+        // ingamerunner.SpawnServerRpc();
     }
 
     void Update()

@@ -13,12 +13,21 @@ namespace PathMaker.ngo
     public class SetupInGame : MonoBehaviour, IReceiveMessages
     {
         [SerializeField] private GameObject m_prefabNetworkManager = default;
+        [SerializeField] private GameObject m_prefabInGameLogic = default;
         // [SerializeField] private GameObject m_prefabHelloWorldManager = default;
         [SerializeField] private GameObject[] m_disableWhileInGame = default;
 
         private GameObject m_inGameManagerObj;
+        private GameObject m_inGameLogicObj;
         private NetworkManager m_networkManager;
-        // private InGameRunner m_inGameRunner;
+        private InGameRunner m_inGameRunner;
+
+        [SerializeField]
+        private GameObject m_spawmManagerPrefab;
+        private GameObject m_spawnManagerGO;
+
+        [SerializeField]
+        private GameObject[] goToSetActive;
 
         private bool m_doesNeedCleanup = false;
         private bool m_hasConnectedViaNGO = false;
@@ -43,17 +52,43 @@ namespace PathMaker.ngo
                 go.SetActive(areVisible);
         }
 
+        private void SetGOActive()
+        {
+            foreach (var go in goToSetActive)
+            {
+                go.SetActive(true);
+            }
+        }
+
         /// <summary>
         /// The prefab with the NetworkManager contains all of the assets and logic needed to set up the NGO minigame.
         /// The UnityTransport needs to also be set up with a new Allocation from Relay.
         /// </summary>
         private void CreateNetworkManager()
         {
+            m_spawnManagerGO = GameObject.Instantiate(m_spawmManagerPrefab);
+            var m_spawnManager = m_spawnManagerGO.GetComponent<SpawnManager>();
+            GameObject[] asianSpawnGOArray = GameObject.FindGameObjectsWithTag("AsianSpawn");
+            for (int i = 0; i < asianSpawnGOArray.Length; i++)
+            {
+                m_spawnManager.AsianSpawnsArray[i] = asianSpawnGOArray[i].transform;
+            }
+            GameObject[] greekSpawnGOArray = GameObject.FindGameObjectsWithTag("GreekSpawn");
+            for (int j = 0; j < greekSpawnGOArray.Length; j++)
+            {
+                m_spawnManager.GreekSpawnsArray[j] = greekSpawnGOArray[j].transform;
+            }
+
+
             m_inGameManagerObj = GameObject.Instantiate(m_prefabNetworkManager);
+            m_inGameLogicObj = GameObject.Instantiate(m_prefabInGameLogic);
             // GameObject.Instantiate(m_prefabHelloWorldManager);
             m_networkManager = m_inGameManagerObj.GetComponent<NetworkManager>();
-            // m_inGameRunner = m_inGameManagerObj.GetComponentInChildren<InGameRunner>();
-            // m_inGameRunner.Initialize(OnConnectionVerified, m_lobby.PlayerCount, OnGameEnd, m_localUser);
+            m_inGameRunner = m_inGameLogicObj.GetComponentInChildren<InGameRunner>();
+            m_inGameRunner.oldRoundState = RoundState.None;
+            m_inGameRunner.roundState.Value = RoundState.Round1;
+
+            m_inGameRunner.Initialize(OnConnectionVerified, m_lobby.PlayerCount, OnGameEnd, m_localUser);
 
             UnityTransport transport = m_inGameManagerObj.GetComponent<UnityTransport>();
             if (m_localUser.IsHost)
@@ -93,6 +128,7 @@ namespace PathMaker.ngo
             {
                 m_doesNeedCleanup = true;
                 SetMenuVisibility(false);
+                SetGOActive();
                 CreateNetworkManager();
             }
 
@@ -121,6 +157,8 @@ namespace PathMaker.ngo
             if (m_doesNeedCleanup)
             {
                 GameObject.Destroy(m_inGameManagerObj); // Since this destroys the NetworkManager, that will kick off cleaning up networked objects.
+                GameObject.Destroy(m_inGameLogicObj); // Since this destroys the NetworkManager, that will kick off cleaning up networked objects.
+                GameObject.Destroy(m_spawnManagerGO);
                 SetMenuVisibility(true);
                 m_lobby.RelayNGOCode = null;
                 m_doesNeedCleanup = false;

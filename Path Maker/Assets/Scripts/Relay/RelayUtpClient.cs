@@ -23,7 +23,7 @@ namespace PathMaker.relay
         private const float k_heartbeatPeriod = 5;
         private bool m_hasDisposed = false;
 
-        protected enum MsgType { Ping = 0, NewPlayer, PlayerApprovalState, ReadyState, PlayerName, Emote, StartCountdown, CancelCountdown, ConfirmInGame, EndInGame, PlayerDisconnect }
+        protected enum MsgType { Ping = 0, NewPlayer, PlayerApprovalState, ReadyState, PlayerName, Emote, StartCountdown, CancelCountdown, ConfirmInGame, EndInGame, PlayerDisconnect, TeamState }
 
         public virtual void Initialize(NetworkDriver networkDriver, List<NetworkConnection> connections, LobbyUser localUser, LocalLobby localLobby)
         {
@@ -142,6 +142,11 @@ namespace PathMaker.relay
                     UserStatus status = (UserStatus)msgContents[0];
                     m_localLobby.LobbyUsers[id].UserStatus = status;
                 }
+                else if (msgType == MsgType.TeamState)
+                {
+                    TeamState state = (TeamState)msgContents[0];
+                    m_localLobby.LobbyUsers[id].TeamState = state;
+                }
                 else if (msgType == MsgType.StartCountdown)
                     Locator.Get.Messenger.OnReceiveMessage(MessageType.StartCountdown, null);
                 else if (msgType == MsgType.CancelCountdown)
@@ -219,6 +224,8 @@ namespace PathMaker.relay
                 WriteString(driver, connection, user.ID, MsgType.PlayerName, user.DisplayName);
             if (0 < (user.LastChanged & LobbyUser.UserMembers.UserStatus))
                 WriteByte(driver, connection, user.ID, MsgType.ReadyState, (byte)user.UserStatus);
+            if (0 < (user.LastChanged & LobbyUser.UserMembers.TeamState))
+                WriteByte(driver, connection, user.ID, MsgType.TeamState, (byte)user.TeamState);
         }
         /// <summary>
         /// Sometimes (e.g. when a new player joins), we need to send out the full current state of this player.
@@ -228,6 +235,7 @@ namespace PathMaker.relay
             // Note that it would be better to send a single message with the full state, but for the sake of shorter code we'll leave that out here.
             WriteString(driver, connection, user.ID, MsgType.PlayerName, user.DisplayName);
             WriteByte(driver, connection, user.ID, MsgType.ReadyState, (byte)user.UserStatus);
+            WriteByte(driver, connection, user.ID, MsgType.TeamState, (byte)user.TeamState);
         }
 
         /// <summary>

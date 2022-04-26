@@ -145,6 +145,7 @@ namespace PathMaker
                 return data;
             data.Add("DisplayName", user.DisplayName); // The lobby doesn't need to know any data beyond the name and state; Relay will handle the rest.
             data.Add("UserStatus", ((int)user.UserStatus).ToString());
+            data.Add("TeamState", ((int)user.TeamState).ToString());
             return data;
         }
     }

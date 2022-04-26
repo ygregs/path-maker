@@ -43,6 +43,7 @@ namespace PathMaker.lobby
                     IsHost = lobby.HostId.Equals(player.Id),
                     DisplayName = player.Data?.ContainsKey("DisplayName") == true ? player.Data["DisplayName"].Value : default,
                     UserStatus = player.Data?.ContainsKey("UserStatus") == true ? (UserStatus)int.Parse(player.Data["UserStatus"].Value) : UserStatus.Connecting,
+                    TeamState = player.Data?.ContainsKey("TeamState") == true ? (TeamState)int.Parse(player.Data["TeamState"].Value) : TeamState.None,
                     ID = player.Id
                 };
                 lobbyUsers.Add(incomingData.ID, incomingData);

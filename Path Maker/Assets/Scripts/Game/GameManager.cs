@@ -82,6 +82,7 @@ namespace PathMaker
                 // Debug.Log("Retrieving session cookie: not logged");
                 m_authState.State = AState.Logout;
             }
+            authData.SetContent("player_team", "AsianTeam");
         }
 
         private async void InitUnityService(Action onSigninComplete)
@@ -213,6 +214,24 @@ namespace PathMaker
                 // SetupGameScene.lobby = m_localLobby;
                 // SceneManager.LoadScene("testGameScene");
                 // SceneManager.LoadScene("testGameScene", LoadSceneMode.Additive);
+            }
+            else if (type == MessageType.EndGame)
+            {
+                m_localLobby.State = LobbyState.Lobby;
+                SetUserLobbyState();
+            }
+            else if (type == MessageType.LobbyUserTeam)
+            {
+                m_localUser.TeamState = (TeamState)msg;
+                if ((TeamState)msg == TeamState.AsianTeam)
+                {
+                    Locator.Get.Authenticator.GetAuthData().SetContent("player_team", "AsianTeam");
+                }
+                else
+                {
+                    Locator.Get.Authenticator.GetAuthData().SetContent("player_team", "GreekTeam");
+                }
+                // Debug.Log(Locator.Get.Authenticator.GetAuthData().GetContent("player_team"));
             }
         }
 

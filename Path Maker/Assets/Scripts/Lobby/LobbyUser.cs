@@ -16,9 +16,9 @@ namespace PathMaker
     [Serializable]
     public class LobbyUser : Observed<LobbyUser>
     {
-        public LobbyUser(bool isHost = false, string displayName = null, string id = null, UserStatus userStatus = UserStatus.Menu, bool isApproved = false)
+        public LobbyUser(bool isHost = false, string displayName = null, string id = null, UserStatus userStatus = UserStatus.Menu, bool isApproved = false, TeamState teamState = TeamState.AsianTeam)
         {
-            m_data = new UserData(isHost, displayName, id, userStatus, isApproved);
+            m_data = new UserData(isHost, displayName, id, userStatus, isApproved, teamState);
         }
 
         public struct UserData
@@ -27,14 +27,17 @@ namespace PathMaker
             public string DisplayName { get; set; }
             public string ID { get; set; }
             public UserStatus UserStatus { get; set; }
+
+            public TeamState TeamState { get; set; }
             public bool IsApproved { get; set; }
 
-            public UserData(bool isHost, string displayName, string id, UserStatus userStatus, bool isApproved)
+            public UserData(bool isHost, string displayName, string id, UserStatus userStatus, bool isApproved, TeamState teamState)
             {
                 IsHost = isHost;
                 DisplayName = displayName;
                 ID = id;
                 UserStatus = userStatus;
+                TeamState = teamState;
                 IsApproved = isApproved;
             }
         }
@@ -43,7 +46,7 @@ namespace PathMaker
 
         public void ResetState()
         {
-            m_data = new UserData(false, m_data.DisplayName, m_data.ID, UserStatus.None, false);
+            m_data = new UserData(false, m_data.DisplayName, m_data.ID, UserStatus.None, false, TeamState.None);
         }
 
         // Used for limiting costly OnChanged actions to just the members which actually changed.
@@ -55,7 +58,8 @@ namespace PathMaker
             DisplayName = 2,
             ID = 4,
             UserStatus = 8,
-            IsApproved = 16
+            IsApproved = 16,
+            TeamState = 32,
         }
 
         private UserMembers m_lastChanged;
@@ -122,6 +126,22 @@ namespace PathMaker
             }
         }
 
+        TeamState m_teamState = TeamState.AsianTeam;
+        public TeamState TeamState
+        {
+            get => m_teamState;
+            set
+            {
+                if (m_teamState != value)
+                {
+                    m_teamState = value;
+                    m_lastChanged = UserMembers.TeamState;
+                    OnChanged(this);
+                }
+            }
+        }
+
+
         // Client joining the lobby should be approved by the host bfore they can interact.
         public bool IsApproved
         {
@@ -145,7 +165,8 @@ namespace PathMaker
                 (m_data.IsHost == data.IsHost ? 0 : (int)UserMembers.IsHost) |
                 (m_data.DisplayName == data.DisplayName ? 0 : (int)UserMembers.DisplayName) |
                 (m_data.ID == data.ID ? 0 : (int)UserMembers.ID) |
-                (m_data.UserStatus == data.UserStatus ? 0 : (int)UserMembers.UserStatus);
+                (m_data.UserStatus == data.UserStatus ? 0 : (int)UserMembers.UserStatus) |
+                (m_data.TeamState == data.TeamState ? 0 : (int)UserMembers.TeamState);
 
             if (lastChanged == 0)
             {

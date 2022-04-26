@@ -16,6 +16,9 @@ namespace PathMaker.UI
         TMP_Text m_DisplayNameText;
 
         [SerializeField]
+        TMP_Text m_TeamText;
+
+        [SerializeField]
         TMP_Text m_StatusText;
 
         [SerializeField]
@@ -56,7 +59,21 @@ namespace PathMaker.UI
         {
             m_DisplayNameText.SetText(observed.DisplayName);
             m_StatusText.SetText(SetStatusFancy(observed.UserStatus));
+            m_TeamText.SetText(SetTeamFancy(observed.TeamState));
             m_HostIcon.enabled = observed.IsHost;
+        }
+
+        string SetTeamFancy(TeamState state)
+        {
+            switch (state)
+            {
+                case TeamState.AsianTeam:
+                    return "<color=#7E0F0F>Asian</color>"; // Red
+                case TeamState.GreekTeam:
+                    return "<color=#7CF6EE>Greek</color>"; // Light blue
+                default:
+                    return "";
+            }
         }
 
         string SetStatusFancy(UserStatus status)
