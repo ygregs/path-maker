@@ -19,22 +19,14 @@ namespace PathMaker.ngo
         Round1,
         Round2,
     }
-    public class InGameRunner : NetworkBehaviour, IInGameInputHandler
+    public class InGameRunner : NetworkBehaviour, IInGameInputHandler, IReceiveMessages
     {
         private Action m_onConnectionVerified, m_onGameEnd;
         private int m_expectedPlayerCount; // Used by the host, but we can't call the RPC until the network connection completes.
-        // private bool? m_canSpawnInGameObjects;
-        // private Queue<Vector2> m_pendingSymbolPositions = new Queue<Vector2>();
-        // private float m_symbolSpawnTimer = 0.5f; // Initial time buffer to ensure connectivity before loading objects.
-        private int m_remainingFlagCount = 2; // Only used by the host.
-        // private float m_timeout = 10;
         private bool m_hasConnected = false;
-
-        private bool m_hasSpawned = false;
 
         [SerializeField]
         private GameObject m_playerPrefab;
-
         private NetworkVariable<int> asianTeamScore = new NetworkVariable<int>(0);
         [SerializeField]
         private TMP_Text asianScoreText;
@@ -58,14 +50,46 @@ namespace PathMaker.ngo
 
         private ulong clientDataId;
 
+        private GameObject[] doorsToClose;
+
+        void Awake()
+        {
+            Locator.Get.Messenger.Subscribe(this);
+        }
+
+        public void OnReceiveMessage(MessageType type, object msg)
+        {
+            if (type == MessageType.CompleteTimer && IsServer)
+            {
+                // CloseDoors();
+                WaitForEndingSequence_ClientRpc();
+            }
+        }
+
+        public void CloseDoors()
+        {
+            foreach (var door in doorsToClose)
+            {
+                var dbcpt = door.GetComponent<DoorBehaviour>();
+                dbcpt.DoCloseDoor(() => Debug.Log("closing door..."));
+                if (NetworkManager.Singleton.IsServer)
+                {
+                    dbcpt.SetIsOpen(false);
+                }
+                else
+                {
+                    dbcpt.SetIsOpenServerRpc(false);
+                }
+            }
+        }
         public void Initialize(Action onConnectionVerified, int expectedPlayerCount, Action onGameEnd, LobbyUser localUser)
         {
             m_onConnectionVerified = onConnectionVerified;
             m_expectedPlayerCount = expectedPlayerCount;
             m_onGameEnd = onGameEnd;
-            // m_canSpawnInGameObjects = null;
             m_localUserData = new PlayerData(localUser.DisplayName, 0, 0, localUser.TeamState);
             Locator.Get.Provide(this); // Simplifies access since some networked objects can't easily communicate locally (e.g. the host might call a ClientRpc without that client knowing where the call originated).
+            doorsToClose = GameObject.FindGameObjectsWithTag("Door");
         }
 
         public override void OnNetworkSpawn()
@@ -74,22 +98,12 @@ namespace PathMaker.ngo
             //     FinishInitialize();
             m_localUserData = new PlayerData(m_localUserData.name, NetworkManager.Singleton.LocalClientId, 0, m_localUserData.teamState);
             VerifyConnection_ServerRpc(m_localUserData.id);
-
-
-            // Vector3 spawnPos = GetSpawningPosition(m_localUserData.teamState);
-            // defaultPlayerPosition = spawnPos;
-            // defaultPositionText.text = $"x: {defaultPlayerPosition.x}, y: {defaultPlayerPosition.y}, z: {defaultPlayerPosition.z}";
         }
 
         public override void OnNetworkDespawn()
         {
             m_onGameEnd(); // As a backup to ensure in-game objects get cleaned up, if this is disconnected unexpectedly.
         }
-
-        // private void FinishInitialize()
-        // {
-        //     // Spawn flags and player ?
-        // }
 
         /// <summary>
         /// To verify the connection, invoke a server RPC call that then invokes a client RPC call. After this, the actual setup occurs.
@@ -114,59 +128,15 @@ namespace PathMaker.ngo
         /// <summary>
         /// Once the connection is confirmed, spawn a player cursor and check if all players have connected.
         /// </summary>
+
         [ServerRpc(RequireOwnership = false)]
         private void VerifyConnectionConfirm_ServerRpc(PlayerData clientData)
         {
-            // Vector3 spawnPos = GetSpawningPosition(clientData.teamState);
-            // defaultPlayerPosition = spawnPos;
-            // defaultPositionText.text = $"x: {defaultPlayerPosition.x}, y: {defaultPlayerPosition.y}, z: {defaultPlayerPosition.z}";
-            // GameObject player = Instantiate(m_playerPrefab, spawnPos, Quaternion.identity);
-            // player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientData.id);
-            // localPlayer = player;
-            // localPlayer = NetworkManager.Singleton?.SpawnManager.GetLocalPlayerObject();
-            // player.GetComponent<NetworkObject>().Spawn();
+
             clientDataId = clientData.id;
             m_dataStore.AddPlayer(clientData.id, clientData.name, clientData.teamState);
             bool areAllPlayersConnected = NetworkManager.ConnectedClients.Count >= m_expectedPlayerCount; // The game will begin at this point, or else there's a timeout for booting any unconnected players.
             VerifyConnectionConfirm_ClientRpc(clientData.id, areAllPlayersConnected);
-        }
-
-        // public void SpawnLocalPlayer()
-        // {
-        //     var cc = localPlayer?.GetComponent<CharacterController>();
-        //     cc.enabled = false;
-        //     localPlayer.transform.position = defaultPlayerPosition;
-        //     cc.enabled = true;
-        // }
-
-        private Vector3 GetSpawningPosition(TeamState team)
-        {
-            SpawnManager spawnManager = GameObject.FindGameObjectWithTag("SpawnManager").GetComponent<SpawnManager>();
-            // Debug.Log(spawnManager);
-            if (spawnManager.firstAsianSpawn.Value)
-            {
-                spawnManager.SetSpawnDisponibility(1, team);
-                if (team == TeamState.AsianTeam)
-                {
-                    return spawnManager.AsianSpawnsArray[0].position;
-                }
-                else
-                {
-                    return spawnManager.GreekSpawnsArray[0].position;
-                }
-            }
-            else
-            {
-                spawnManager.SetSpawnDisponibility(2, team);
-                if (team == TeamState.AsianTeam)
-                {
-                    return spawnManager.AsianSpawnsArray[1].position;
-                }
-                else
-                {
-                    return spawnManager.GreekSpawnsArray[1].position;
-                }
-            }
         }
 
         [ClientRpc]
@@ -180,7 +150,6 @@ namespace PathMaker.ngo
 
             if (canBeginGame && m_hasConnected)
             {
-                // m_timeout = -1;
                 BeginGame();
             }
         }
@@ -190,9 +159,9 @@ namespace PathMaker.ngo
         /// </summary>
         private void BeginGame()
         {
-            // Debug.Log("game begin");
-            // m_canSpawnInGameObjects = true;
             Locator.Get.Messenger.OnReceiveMessage(MessageType.MinigameBeginning, null);
+            Locator.Get.Messenger.OnReceiveMessage(MessageType.StartTimer, null);
+            CloseDoors();
             m_introOutroRunner.DoIntro();
         }
 
@@ -285,11 +254,13 @@ namespace PathMaker.ngo
                 SetLastRound();
                 Locator.Get.Messenger.OnReceiveMessage(MessageType.SpawnPlayer, null);
                 ShowLastRoundAnimationClientRpc();
+                CloseDoors();
                 // Debug.Log("first flag has returned");
             }
             else
             {
                 // Debug.Log("seconde flag has returned");
+                Locator.Get.Messenger.OnReceiveMessage(MessageType.ResetTimer, null);
                 SpawnManager spawnManager = GameObject.FindGameObjectWithTag("SpawnManager").GetComponent<SpawnManager>();
                 spawnManager.ResetSpawns();
                 WaitForEndingSequence_ClientRpc();
@@ -363,6 +334,10 @@ namespace PathMaker.ngo
         public void OnReProvided(IInGameInputHandler previousProvider)
         {
             /*No-op*/
+        }
+        public override void OnDestroy()
+        {
+            Locator.Get.Messenger.Unsubscribe(this);
         }
     }
 }

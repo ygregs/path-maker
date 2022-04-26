@@ -113,6 +113,9 @@ namespace PathMaker
 
         LobbyUserTeam = 301,
         SpawnPlayer = 302,
+        StartTimer = 303,
+        ResetTimer = 304,
+        CompleteTimer = 305,
     }
 
     public interface IReceiveMessages

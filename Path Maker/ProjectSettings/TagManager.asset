@@ -11,6 +11,7 @@ TagManager:
   - SpawnManager
   - AsianSpawn
   - GreekSpawn
+  - Door
   layers:
   - Default
   - TransparentFX
