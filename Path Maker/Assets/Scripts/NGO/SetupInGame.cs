@@ -68,6 +68,7 @@ namespace PathMaker.ngo
         {
             m_spawnManagerGO = GameObject.Instantiate(m_spawmManagerPrefab);
             var m_spawnManager = m_spawnManagerGO.GetComponent<SpawnManager>();
+
             GameObject[] asianSpawnGOArray = GameObject.FindGameObjectsWithTag("AsianSpawn");
             for (int i = 0; i < asianSpawnGOArray.Length; i++)
             {

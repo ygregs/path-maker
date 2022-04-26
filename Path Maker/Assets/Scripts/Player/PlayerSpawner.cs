@@ -29,32 +29,56 @@ namespace PathMaker
         {
             SpawnManager spawnManager = GameObject.FindGameObjectWithTag("SpawnManager").GetComponent<SpawnManager>();
             // Debug.Log(spawnManager);
-            if (spawnManager.firstAsianSpawn.Value)
+            if (team == TeamState.AsianTeam)
             {
-                spawnManager.SetSpawnDisponibility(1, team);
-                if (team == TeamState.AsianTeam)
+                if (spawnManager.firstAsianSpawn.Value)
                 {
+                    spawnManager.SetSpawnDisponibility(1, team);
                     return spawnManager.AsianSpawnsArray[0].position;
                 }
                 else
                 {
-                    return spawnManager.GreekSpawnsArray[0].position;
-                    // return spawnManager.GreekSpawnsArray[0].position;
+                    spawnManager.SetSpawnDisponibility(2, team);
+                    return spawnManager.AsianSpawnsArray[1].position;
                 }
             }
             else
             {
-                spawnManager.SetSpawnDisponibility(2, team);
-                if (team == TeamState.AsianTeam)
+                if (spawnManager.firstGreekSpawn.Value)
                 {
-                    return spawnManager.AsianSpawnsArray[1].position;
+                    spawnManager.SetSpawnDisponibility(1, team);
+                    return spawnManager.GreekSpawnsArray[0].position;
                 }
                 else
                 {
+                    spawnManager.SetSpawnDisponibility(2, team);
                     return spawnManager.GreekSpawnsArray[1].position;
-                    // return spawnManager.GreekSpawnsArray[1].position;
                 }
             }
+            // if (spawnManager.firstAsianSpawn.Value && team == TeamState.AsianTeam)
+            // {
+            //     spawnManager.SetSpawnDisponibility(1, team);
+            //     if (team == TeamState.AsianTeam)
+            //     {
+            //         return spawnManager.AsianSpawnsArray[0].position;
+            //     }
+            //     else
+            //     {
+            //         return spawnManager.GreekSpawnsArray[0].position;
+            //     }
+            // }
+            // else
+            // {
+            //     spawnManager.SetSpawnDisponibility(2, team);
+            //     if (team == TeamState.AsianTeam)
+            //     {
+            //         return spawnManager.AsianSpawnsArray[1].position;
+            //     }
+            //     else
+            //     {
+            //         return spawnManager.GreekSpawnsArray[1].position;
+            //     }
+            // }
         }
 
 
