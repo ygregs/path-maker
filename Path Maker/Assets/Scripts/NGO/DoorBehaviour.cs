@@ -17,7 +17,7 @@ namespace PathMaker
         public DoorType m_type = DoorType.FirstDoor;
 
         [SerializeField]
-        private Animator m_animator;
+        private Unity.Netcode.Components.NetworkAnimator m_animator;
 
         private Action m_onOpenComplete;
         private Action m_onCloseComplete;
@@ -25,7 +25,8 @@ namespace PathMaker
         public void DoOpenDoor(Action onOpenComplete)
         {
             m_onOpenComplete = onOpenComplete;
-            m_animator.SetTrigger("Open");
+            Debug.Log("do openning animation");
+            m_animator.Animator.SetBool("Open", true);
         }
 
         public void SetIsOpen(bool state)
@@ -41,7 +42,8 @@ namespace PathMaker
         public void DoCloseDoor(Action onCloseComplete)
         {
             m_onCloseComplete = onCloseComplete;
-            m_animator.SetTrigger("Close");
+            m_animator.Animator.SetBool("Open", false);
+            // m_animator.SetTrigger("Close");
         }
         public void OnOpenComplete()
         {

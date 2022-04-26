@@ -27,6 +27,7 @@ namespace PathMaker.ngo
 
         [SerializeField]
         private GameObject m_playerPrefab;
+        private int asianScore = 0;
         private NetworkVariable<int> asianTeamScore = new NetworkVariable<int>(0);
         [SerializeField]
         private TMP_Text asianScoreText;
@@ -34,6 +35,7 @@ namespace PathMaker.ngo
         [SerializeField]
         private TMP_Text greekScoreText;
         public RoundState oldRoundState = RoundState.None;
+
         public NetworkVariable<RoundState> roundState = new NetworkVariable<RoundState>(RoundState.Round1);
         [SerializeField]
         private TMP_Text roundStateText;
@@ -50,7 +52,11 @@ namespace PathMaker.ngo
 
         private ulong clientDataId;
 
-        private GameObject[] doorsToClose;
+        // private GameObject[] doorsToClose;
+
+        [SerializeField]
+        private GameObject m_doorPrefab;
+        private GameObject doorGo;
 
         void Awake()
         {
@@ -68,19 +74,20 @@ namespace PathMaker.ngo
 
         public void CloseDoors()
         {
-            foreach (var door in doorsToClose)
+            // foreach (var door in doorsToClose)
+            // {
+            //     var dbcpt = door.GetComponent<DoorBehaviour>();
+            //     dbcpt.DoCloseDoor(() => Debug.Log("closing door..."));
+            if (NetworkManager.Singleton.IsServer)
             {
-                var dbcpt = door.GetComponent<DoorBehaviour>();
-                dbcpt.DoCloseDoor(() => Debug.Log("closing door..."));
-                if (NetworkManager.Singleton.IsServer)
-                {
-                    dbcpt.SetIsOpen(false);
-                }
-                else
-                {
-                    dbcpt.SetIsOpenServerRpc(false);
-                }
+                doorGo.GetComponent<DoorBehaviour>().DoCloseDoor(() => Debug.Log("closing door..."));
+                doorGo.GetComponent<DoorBehaviour>().SetIsOpen(false);
             }
+            //     else
+            //     {
+            //         dbcpt.SetIsOpenServerRpc(false);
+            //     }
+            // }
         }
         public void Initialize(Action onConnectionVerified, int expectedPlayerCount, Action onGameEnd, LobbyUser localUser)
         {
@@ -89,7 +96,7 @@ namespace PathMaker.ngo
             m_onGameEnd = onGameEnd;
             m_localUserData = new PlayerData(localUser.DisplayName, 0, 0, localUser.TeamState);
             Locator.Get.Provide(this); // Simplifies access since some networked objects can't easily communicate locally (e.g. the host might call a ClientRpc without that client knowing where the call originated).
-            doorsToClose = GameObject.FindGameObjectsWithTag("Door");
+            // doorsToClose = GameObject.FindGameObjectsWithTag("Door");
         }
 
         public override void OnNetworkSpawn()
@@ -98,11 +105,18 @@ namespace PathMaker.ngo
             //     FinishInitialize();
             m_localUserData = new PlayerData(m_localUserData.name, NetworkManager.Singleton.LocalClientId, 0, m_localUserData.teamState);
             VerifyConnection_ServerRpc(m_localUserData.id);
+            // asianTeamScore.OnValueChanged += OnAsianScoreChanged;
+        }
+
+        public void OnAsianScoreChanged(int prev, int cur)
+        {
+            asianScoreText.text = (cur).ToString();
         }
 
         public override void OnNetworkDespawn()
         {
             m_onGameEnd(); // As a backup to ensure in-game objects get cleaned up, if this is disconnected unexpectedly.
+            // asianTeamScore.OnValueChanged -= OnAsianScoreChanged;
         }
 
         /// <summary>
@@ -159,9 +173,14 @@ namespace PathMaker.ngo
         /// </summary>
         private void BeginGame()
         {
+            if (IsServer)
+            {
+                doorGo = Instantiate(m_doorPrefab, Vector3.zero, Quaternion.identity);
+                doorGo.GetComponent<NetworkObject>().Spawn();
+            }
+            // CloseDoors();
             Locator.Get.Messenger.OnReceiveMessage(MessageType.MinigameBeginning, null);
             Locator.Get.Messenger.OnReceiveMessage(MessageType.StartTimer, null);
-            CloseDoors();
             m_introOutroRunner.DoIntro();
         }
 
@@ -233,7 +252,6 @@ namespace PathMaker.ngo
                 SubmitScoreChangeServerRpc(points, team);
             }
         }
-
         [ServerRpc]
         void SubmitScoreChangeServerRpc(int points, TeamState team)
         {
@@ -246,6 +264,15 @@ namespace PathMaker.ngo
                 asianTeamScore.Value = asianTeamScore.Value + points;
             }
         }
+
+        [ClientRpc]
+        public void SetAsianScore_ClientRpc(int newScore)
+        {
+            if (IsServer)
+                return;
+            asianScore = newScore;
+        }
+
         public void OnFlagReturned()
         {
             // Debug.Log("the state is " + roundState.Value.ToString());
@@ -290,6 +317,7 @@ namespace PathMaker.ngo
         {
             roundState.Value = RoundState.Round2;
         }
+
 
         /// <summary>
         /// The server determines when the game should end. Once it does, it needs to inform the clients to clean up their networked objects first,

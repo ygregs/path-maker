@@ -59,10 +59,9 @@ namespace PathMaker
             }
         }
 
-        [ServerRpc(RequireOwnership = false)]
+        [ServerRpc]
         private void SendFlagReturned_ServerRpc(ulong id, TeamState state)
         {
-
             Locator.Get.InGameInputHandler.OnPlayerInput(id, state, ScoreType.Flag); // add 5 when returned flag
             // OnInputVisuals_ClientRpc();
         }

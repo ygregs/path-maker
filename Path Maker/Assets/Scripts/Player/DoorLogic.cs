@@ -44,7 +44,7 @@ namespace PathMaker
             }
         }
 
-        [ServerRpc(RequireOwnership = false)]
+        [ServerRpc]
         private void SendFlagReturned_ServerRpc(ulong id, TeamState state, ScoreType scoreType)
         {
 
