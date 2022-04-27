@@ -12,8 +12,9 @@ namespace PathMaker.ngo
         public ulong id;
         public int score;
         public TeamState teamState;
+        public float health;
         public PlayerData() { } // A default constructor is explicitly required for serialization.
-        public PlayerData(string name, ulong id, int score = 0, TeamState teamState = TeamState.None) { this.name = name; this.id = id; this.score = score; this.teamState = teamState; }
+        public PlayerData(string name, ulong id, int score = 0, TeamState teamState = TeamState.None, float health = 0f) { this.name = name; this.id = id; this.score = score; this.teamState = teamState; this.health = health; }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
@@ -21,6 +22,7 @@ namespace PathMaker.ngo
             serializer.SerializeValue(ref id);
             serializer.SerializeValue(ref score);
             serializer.SerializeValue(ref teamState);
+            serializer.SerializeValue(ref health);
         }
     }
 }

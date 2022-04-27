@@ -45,6 +45,7 @@ namespace PathMaker.ngo
 
         [SerializeField]
         private Scorer m_scorer = default;
+        private PlayerHealth m_health = default;
         [SerializeField]
         private NetworkedDataStore m_dataStore = default;
 
@@ -94,7 +95,7 @@ namespace PathMaker.ngo
             m_onConnectionVerified = onConnectionVerified;
             m_expectedPlayerCount = expectedPlayerCount;
             m_onGameEnd = onGameEnd;
-            m_localUserData = new PlayerData(localUser.DisplayName, 0, 0, localUser.TeamState);
+            m_localUserData = new PlayerData(localUser.DisplayName, 0, 0, localUser.TeamState, 100.0f);
             Locator.Get.Provide(this); // Simplifies access since some networked objects can't easily communicate locally (e.g. the host might call a ClientRpc without that client knowing where the call originated).
             // doorsToClose = GameObject.FindGameObjectsWithTag("Door");
         }
@@ -103,7 +104,7 @@ namespace PathMaker.ngo
         {
             // if (IsHost)
             //     FinishInitialize();
-            m_localUserData = new PlayerData(m_localUserData.name, NetworkManager.Singleton.LocalClientId, 0, m_localUserData.teamState);
+            m_localUserData = new PlayerData(m_localUserData.name, NetworkManager.Singleton.LocalClientId, 0, m_localUserData.teamState, 100.0f);
             VerifyConnection_ServerRpc(m_localUserData.id);
             // asianTeamScore.OnValueChanged += OnAsianScoreChanged;
         }
@@ -211,7 +212,7 @@ namespace PathMaker.ngo
         /// <summary>
         /// Called while on the host to determine if incoming input has scored or not.
         /// </summary>
-        public void OnPlayerInput(ulong playerId, TeamState team, ScoreType scoreType)
+        public void OnPlayerInput(ulong playerId, TeamState team, ScoreType scoreType, ulong shooterId)
         {
             int points = 0;
             switch (scoreType)
@@ -231,7 +232,15 @@ namespace PathMaker.ngo
                 default:
                     break;
             }
-            m_scorer.ScoreSuccess(playerId, points);
+            if (scoreType == ScoreType.Kill)
+            {
+                m_scorer.ScoreSuccess(shooterId, points);
+                m_health.TakeDamage(playerId, 40);
+            }
+            else
+            {
+                m_scorer.ScoreSuccess(playerId, points);
+            }
             if (scoreType == ScoreType.Flag)
             {
                 OnFlagReturned();

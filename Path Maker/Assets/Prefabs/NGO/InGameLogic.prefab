@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7625114535360062130}
   - component: {fileID: 6726156895805054576}
   - component: {fileID: 476297280064414840}
+  - component: {fileID: 3471277262166466062}
   m_Layer: 0
   m_Name: InGameRunner
   m_TagString: Untagged
@@ -156,6 +157,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da2db1ccd3384c02bf2a3aabcda7218, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3471277262166466062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1441266605018167998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 708d13e85c9e145f7afea3f0abd767b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_dataStore: {fileID: 7763279341599342134}
+  m_healthText: {fileID: 720872525077108651}
 --- !u!1 &6914365875385468757
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,6 +278,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 799842042044259195, guid: ca08623d151b046bdb83a3a5cfe85caa, type: 3}
+      propertyPath: m_Name
+      value: HealthText
+      objectReference: {fileID: 0}
     - target: {fileID: 887524981423632316, guid: ca08623d151b046bdb83a3a5cfe85caa, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -318,6 +337,10 @@ PrefabInstance:
     - target: {fileID: 2724473806715958755, guid: ca08623d151b046bdb83a3a5cfe85caa, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3002348481886297643, guid: ca08623d151b046bdb83a3a5cfe85caa, type: 3}
+      propertyPath: m_text
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3056193658878808906, guid: ca08623d151b046bdb83a3a5cfe85caa, type: 3}
       propertyPath: m_AnchorMax.y
@@ -430,6 +453,10 @@ PrefabInstance:
     - target: {fileID: 5808598691669702472, guid: ca08623d151b046bdb83a3a5cfe85caa, type: 3}
       propertyPath: m_Name
       value: InGameCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 5952018274585063188, guid: ca08623d151b046bdb83a3a5cfe85caa, type: 3}
+      propertyPath: m_Name
+      value: HealthLabel
       objectReference: {fileID: 0}
     - target: {fileID: 6102690413231646595, guid: ca08623d151b046bdb83a3a5cfe85caa, type: 3}
       propertyPath: m_AnchorMax.y
@@ -731,6 +758,17 @@ MonoBehaviour:
 --- !u!114 &7265585192343021588 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5152111975147954580, guid: ca08623d151b046bdb83a3a5cfe85caa, type: 3}
+  m_PrefabInstance: {fileID: 2570273045340703104}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &720872525077108651 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3002348481886297643, guid: ca08623d151b046bdb83a3a5cfe85caa, type: 3}
   m_PrefabInstance: {fileID: 2570273045340703104}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}

@@ -12,6 +12,8 @@ TagManager:
   - AsianSpawn
   - GreekSpawn
   - Door
+  - Bullet
+  - DebugTransform
   layers:
   - Default
   - TransparentFX

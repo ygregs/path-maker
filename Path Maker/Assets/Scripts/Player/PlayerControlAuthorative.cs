@@ -34,6 +34,10 @@ public class PlayerControlAuthorative : NetworkBehaviour
 
     private bool IsInCrouch = false;
 
+    private bool _rotateOnMove = true;
+
+    public float Sensitivity = 1f;
+
     public override void OnNetworkSpawn()
     {
         characterCamera = GameObject.Find("Main Camera").transform;
@@ -170,7 +174,10 @@ public class PlayerControlAuthorative : NetworkBehaviour
             {
                 // characterController.SimpleMove(moveDir * speed);
                 characterController.Move(moveDir.normalized * walkSpeed * Time.deltaTime);
-                transform.rotation = Quaternion.Euler(0f, angle, 0f);
+                if (_rotateOnMove)
+                {
+                    transform.rotation = Quaternion.Euler(0f, angle, 0f);
+                }
             }
             // transform.Rotate(inputRotation * rotationSpeed, Space.World);
             // client is responsible for moving itself
@@ -189,5 +196,15 @@ public class PlayerControlAuthorative : NetworkBehaviour
     public void UpdatePlayerStateServerRpc(PlayerState state)
     {
         networkPlayerState.Value = state;
+    }
+
+    // public void SetSensitivity(float newSensitivity)
+    // {
+    //     Sensitivity = newSensitivity;
+    // }
+
+    public void SetRotateOnMove(bool newRotateOnMove)
+    {
+        _rotateOnMove = newRotateOnMove;
     }
 }

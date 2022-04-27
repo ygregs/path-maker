@@ -3,19 +3,24 @@ using Unity.Netcode;
 using Cinemachine;
 
 
-    public class SetCinemachinePriority : NetworkBehaviour {
+public class SetCinemachinePriority : NetworkBehaviour
+{
 
-        public CinemachineFreeLook cinemachinefreelook;
+    public CinemachineFreeLook cinemachinefreelook;
+    public CinemachineFreeLook aimFreeLook;
 
-        public override void OnNetworkSpawn()
+    public override void OnNetworkSpawn()
+    {
+        if (IsOwner)
         {
-            if (IsOwner)
-            {
-               cinemachinefreelook.Priority = 10; 
-            }
-            else {
-                cinemachinefreelook.Priority = 0; 
-            }
+            cinemachinefreelook.Priority = 10;
+            aimFreeLook.Priority = 11;
+        }
+        else
+        {
+            cinemachinefreelook.Priority = 0;
+            aimFreeLook.Priority = 0;
+        }
     }
 
 }

@@ -62,7 +62,7 @@ namespace PathMaker
         [ServerRpc]
         private void SendFlagReturned_ServerRpc(ulong id, TeamState state)
         {
-            Locator.Get.InGameInputHandler.OnPlayerInput(id, state, ScoreType.Flag); // add 5 when returned flag
+            Locator.Get.InGameInputHandler.OnPlayerInput(id, state, ScoreType.Flag, (ulong)0); // add 5 when returned flag
             // OnInputVisuals_ClientRpc();
         }
     }

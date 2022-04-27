@@ -64,6 +64,19 @@ namespace PathMaker.ngo
             return int.MinValue;
         }
 
+        public float UpdateHealth(ulong id, float delta)
+        {
+            if (!IsServer)
+                return float.MinValue;
+
+            if (m_playerData.ContainsKey(id))
+            {
+                m_playerData[id].health -= delta;
+                return m_playerData[id].health;
+            }
+            return float.MinValue;
+        }
+
         /// <summary>
         /// Retrieve the data for all players in order from 1st to last place, calling onEachPlayer for each.
         /// </summary>
