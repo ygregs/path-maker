@@ -27,6 +27,7 @@ namespace PathMaker.ngo
 
         [SerializeField]
         private GameObject m_playerPrefab;
+        [SerializeField]
         private int asianScore = 0;
         private NetworkVariable<int> asianTeamScore = new NetworkVariable<int>(0);
         [SerializeField]
@@ -56,14 +57,22 @@ namespace PathMaker.ngo
         // private GameObject[] doorsToClose;
 
         [SerializeField] private GameObject m_doorPrefab;
+        [SerializeField] private GameObject bridgeDoorGoPrefab;
         [SerializeField] private GameObject m_manivellePrefab;
-        private GameObject doorGo;
-        private GameObject manivelleGo;
+        [SerializeField] private GameObject m_manivelleAsianPrefab;
+        private GameObject doorGo1;
+        private GameObject doorGo2;
+        private GameObject doorGo3;
+        private GameObject doorGo4;
+        private GameObject manivelleGoAsian;
 
         [SerializeField] private GameObject greekFPrefab;
         [SerializeField] private GameObject asianFPrefab;
         private GameObject greekF;
         private GameObject asianF;
+
+        // [SerializeField] private Vector3[] doorsPositions;
+        private GameObject[] bridgeDoors;
 
         void Awake()
         {
@@ -88,13 +97,19 @@ namespace PathMaker.ngo
             //     dbcpt.DoCloseDoor(() => Debug.Log("closing door..."));
             if (NetworkManager.Singleton.IsServer)
             {
-                doorGo.GetComponent<DoorBehaviour>().DoCloseDoor(() => Debug.Log("closing door..."));
-                doorGo.GetComponent<DoorBehaviour>().SetIsOpen(false);
+                doorGo1.GetComponent<DoorBehaviour>().DoCloseDoor(() => Debug.Log("closing door..."));
+                doorGo1.GetComponent<DoorBehaviour>().SetIsOpen(false);
+                doorGo2.GetComponent<DoorBehaviour>().DoCloseDoor(() => Debug.Log("closing door..."));
+                doorGo2.GetComponent<DoorBehaviour>().SetIsOpen(false);
+                doorGo3.GetComponent<DoorBehaviour>().DoCloseDoor(() => Debug.Log("closing door..."));
+                doorGo3.GetComponent<DoorBehaviour>().SetIsOpen(false);
+                doorGo4.GetComponent<DoorBehaviour>().DoCloseDoor(() => Debug.Log("closing door..."));
+                doorGo4.GetComponent<DoorBehaviour>().SetIsOpen(false);
 
                 // Reset manivelles 
-                manivelleGo.GetComponent<ManivelleBehaviour>().DoCloseDoor(() => Debug.Log("reseting manivelles..."));
-                manivelleGo.GetComponent<ManivelleBehaviour>().SetIsOpen(false);
-                manivelleGo.GetComponent<ManivelleBehaviour>().SetCanOpen(false);
+                manivelleGoAsian.GetComponent<ManivelleBehaviour>().DoCloseDoor(() => Debug.Log("reseting manivelles..."));
+                manivelleGoAsian.GetComponent<ManivelleBehaviour>().SetIsOpen(false);
+                manivelleGoAsian.GetComponent<ManivelleBehaviour>().SetCanOpen(false);
 
                 greekF.GetComponent<NetworkObject>().Despawn();
                 asianF.GetComponent<NetworkObject>().Despawn();
@@ -196,15 +211,27 @@ namespace PathMaker.ngo
         {
             if (IsServer)
             {
-                // doorGo = Instantiate(m_doorPrefab, Vector3.zero, Quaternion.identity);
-                doorGo = Instantiate(m_doorPrefab, new Vector3(15, 0, 10), Quaternion.identity);
-                doorGo.GetComponent<NetworkObject>().Spawn();
-                manivelleGo = Instantiate(m_manivellePrefab, new Vector3(2, 1.20f, 18), Quaternion.identity);
-                manivelleGo.GetComponent<NetworkObject>().Spawn();
+                doorGo1 = Instantiate(bridgeDoorGoPrefab, new Vector3(230f, -3f, 258f), Quaternion.Euler(0f, 90f, 0f));
+                doorGo1.GetComponent<NetworkObject>().Spawn();
+                doorGo2 = Instantiate(bridgeDoorGoPrefab, new Vector3(230f, -3f, 309f), Quaternion.Euler(0f, 90f, 0f));
+                doorGo2.GetComponent<NetworkObject>().Spawn();
+                doorGo3 = Instantiate(bridgeDoorGoPrefab, new Vector3(119, -3f, 258f), Quaternion.Euler(0f, 90f, 0f));
+                doorGo3.GetComponent<NetworkObject>().Spawn();
+                doorGo4 = Instantiate(bridgeDoorGoPrefab, new Vector3(119, -3f, 309f), Quaternion.Euler(0f, 90f, 0f));
+                doorGo4.GetComponent<NetworkObject>().Spawn();
 
-                greekF = Instantiate(greekFPrefab, new Vector3(-4.5f, 0, 6.5f), Quaternion.identity);
+
+                manivelleGoAsian = Instantiate(m_manivelleAsianPrefab, new Vector3(285.4f, -2.3f, 280.5f), Quaternion.Euler(0f, 180f, 0f));
+                manivelleGoAsian.GetComponent<NetworkObject>().Spawn();
+
+                // position in test scene:
+                // greekF = Instantiate(greekFPrefab, new Vector3(-4.5f, 0, 6.5f), Quaternion.identity);
+                // position in final scene:
+                greekF = Instantiate(greekFPrefab, new Vector3(0f, -1.77f, 278f), Quaternion.identity);
                 greekF.GetComponent<NetworkObject>().Spawn();
-                asianF = Instantiate(asianFPrefab, new Vector3(-9.5f, 0, 7f), Quaternion.identity);
+                // postion in test scene:
+                // asianF = Instantiate(asianFPrefab, new Vector3(-9.5f, 0, 7f), Quaternion.identity);
+                asianF = Instantiate(asianFPrefab, new Vector3(346f, -3.48f, 282f), Quaternion.identity);
                 asianF.GetComponent<NetworkObject>().Spawn();
             }
             // CloseDoors();

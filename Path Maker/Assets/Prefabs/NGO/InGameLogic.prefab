@@ -49,6 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerPrefab: {fileID: 5053311587945168092, guid: 72ffbdebd093645109a37a1ccd42447e, type: 3}
+  asianScore: 0
   asianScoreText: {fileID: 8259328146383190883}
   greekScoreText: {fileID: 3865475443640775429}
   oldRoundState: 0
@@ -59,7 +60,9 @@ MonoBehaviour:
   m_scorer: {fileID: 4631936626728472751}
   m_dataStore: {fileID: 7763279341599342134}
   m_doorPrefab: {fileID: 2759792256724528148, guid: 04f86a52848664d5ba59e5172d8e427f, type: 3}
+  bridgeDoorGoPrefab: {fileID: 6046552305613230455, guid: 70384a5aecd2446a9a6af21b900a1c1d, type: 3}
   m_manivellePrefab: {fileID: 77841916042899950, guid: 0bfb9e6d576b7428bb5203c4f650dd8d, type: 3}
+  m_manivelleAsianPrefab: {fileID: 267800711115728761, guid: 9f36e8a04c53646eba5ec77de28786a8, type: 3}
   greekFPrefab: {fileID: 8941064983718223635, guid: a287771e715a64767875bf726d2bcbf8, type: 3}
   asianFPrefab: {fileID: 571087504420072016, guid: 66eb7e4077aee435eb6907098dcb1ba6, type: 3}
 --- !u!114 &4631936626728472751

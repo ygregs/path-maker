@@ -6,16 +6,14 @@ using UnityEngine;
 public class PlayerControlAuthorative : NetworkBehaviour
 {
     [SerializeField] private float walkSpeed = 5f;
-    [SerializeField] private float runSpeed = 7f;
-    [SerializeField] private float crouchSpeed = 3f;
+    [SerializeField] private float runSpeed;
+    [SerializeField] private float crouchSpeed;
 
-    [SerializeField]
-    private float runSpeedOffset = 2.0f;
+    // [SerializeField] private float runSpeedOffset = 2.0f;
 
-    [SerializeField]
-    private float turnSmoothTime = 0.1f;
+    [SerializeField] private float turnSmoothTime = 0.1f;
 
-    private float crouchSpeedOffset = 0.5f;
+    // private float crouchSpeedOffset = 0.5f;
     private float turnSmoothVelocity;
 
     [SerializeField]
@@ -177,7 +175,7 @@ public class PlayerControlAuthorative : NetworkBehaviour
                 walkSpeed = runSpeed;
                 if (IsInCrouch)
                 {
-                    walkSpeed = walkSpeed * crouchSpeedOffset;
+                    walkSpeed = crouchSpeed;
                     UpdatePlayerStateServerRpc(PlayerState.RunCrouch);
                 }
                 else

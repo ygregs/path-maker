@@ -36,6 +36,8 @@ namespace PathMaker.ngo
         private LocalLobby m_lobby;
         private LobbyUser m_localUser;
 
+        [SerializeField] private GameObject spawnerPrefab;
+
 
         public void Start()
         {
@@ -94,10 +96,27 @@ namespace PathMaker.ngo
             UnityTransport transport = m_inGameManagerObj.GetComponent<UnityTransport>();
             if (m_localUser.IsHost)
             {
-                m_inGameManagerObj.AddComponent<RelayUtpNGOSetupHost>().Initialize(this, m_lobby, () => { m_initializeTransport(transport); m_networkManager.StartHost(); });
+                m_inGameManagerObj.AddComponent<RelayUtpNGOSetupHost>().Initialize(this, m_lobby, () =>
+                {
+                    m_initializeTransport(transport); m_networkManager.StartHost();
+                    // var spawner = GameObject.Instantiate(spawnerPrefab, Vector3.zero, Quaternion.identity);
+                    // spawner.GetComponent<NetworkObject>().Spawn();
+                });
             }
             else
-                m_inGameManagerObj.AddComponent<RelayUtpNGOSetupClient>().Initialize(this, m_lobby, () => { m_initializeTransport(transport); m_networkManager.StartClient(); });
+                m_inGameManagerObj.AddComponent<RelayUtpNGOSetupClient>().Initialize(this, m_lobby, () =>
+                {
+                    // m_initializeTransport(transport); m_networkManager.StartClient(); SpawnSpawnerServerRpc();
+                });
+
+
+        }
+
+        [ServerRpc]
+        void SpawnSpawnerServerRpc()
+        {
+            var spawner = GameObject.Instantiate(spawnerPrefab, Vector3.zero, Quaternion.identity);
+            spawner.GetComponent<NetworkObject>().Spawn();
         }
 
         private void OnConnectionVerified()
