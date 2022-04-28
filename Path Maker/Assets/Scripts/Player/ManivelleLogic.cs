@@ -44,10 +44,13 @@ namespace PathMaker
                 }
                 manivelleBehaviour.StartOpening(() =>
                     {
+                        manivelleBehaviour.DoOpenDoor(() =>
+                        SendFlagReturned_ServerRpc(m_localId, m_teamState, ScoreType.FirstDoor)
+                        // Locator.Get.InGameInputHandler.OnPlayerInput(m_localId, m_teamState, ScoreType.FirstDoor, (ulong)0)
+                             );
                         manivelleBehaviour.StopOpening(() => Debug.Log("stop opening animation"));
                         if (manivelleBehaviour.CanOpen.Value)
                         {
-                            manivelleBehaviour.DoOpenDoor(() => SendFlagReturned_ServerRpc(m_localId, m_teamState, ScoreType.FirstDoor));
                             if (NetworkManager.Singleton.IsServer)
                             {
                                 manivelleBehaviour.SetIsOpen(true);
@@ -56,9 +59,11 @@ namespace PathMaker
                             {
                                 manivelleBehaviour.SetIsOpenServerRpc(true);
                             }
+                            // manivelleBehaviour.DoOpenDoor(() => SendFlagReturned_ServerRpc(m_localId, m_teamState, ScoreType.FirstDoor));
                         }
                     }
                     );
+                // manivelleBehaviour.DoOpenDoor(() => SendFlagReturned_ServerRpc(m_localId, m_teamState, ScoreType.FirstDoor));
             }
         }
 
@@ -80,12 +85,12 @@ namespace PathMaker
             }
         }
 
-        [ServerRpc]
+        [ServerRpc(RequireOwnership = false)]
         private void SendFlagReturned_ServerRpc(ulong id, TeamState state, ScoreType scoreType)
         {
-
+            Debug.Log("resquet for score");
             Locator.Get.InGameInputHandler.OnPlayerInput(id, state, scoreType, (ulong)0); // add 5 when returned flag
-            // OnInputVisuals_ClientRpc();
+                                                                                          // OnInputVisuals_ClientRpc();
         }
     }
 }

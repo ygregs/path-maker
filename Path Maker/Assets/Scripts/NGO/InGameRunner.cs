@@ -96,8 +96,13 @@ namespace PathMaker.ngo
                 manivelleGo.GetComponent<ManivelleBehaviour>().SetIsOpen(false);
                 manivelleGo.GetComponent<ManivelleBehaviour>().SetCanOpen(false);
 
-                greekF.SetActive(true);
-                asianF.SetActive(true);
+                greekF.GetComponent<NetworkObject>().Despawn();
+                asianF.GetComponent<NetworkObject>().Despawn();
+
+                greekF = Instantiate(greekFPrefab, new Vector3(-4.5f, 0, 6.5f), Quaternion.identity);
+                greekF.GetComponent<NetworkObject>().Spawn();
+                asianF = Instantiate(asianFPrefab, new Vector3(-9.5f, 0, 7f), Quaternion.identity);
+                asianF.GetComponent<NetworkObject>().Spawn();
             }
             //     else
             //     {
@@ -196,9 +201,10 @@ namespace PathMaker.ngo
                 doorGo.GetComponent<NetworkObject>().Spawn();
                 manivelleGo = Instantiate(m_manivellePrefab, new Vector3(2, 1.20f, 18), Quaternion.identity);
                 manivelleGo.GetComponent<NetworkObject>().Spawn();
-                greekF = Instantiate(greekFPrefab, new Vector3(-4.5f, -1.5f, 6.5f), Quaternion.identity);
+
+                greekF = Instantiate(greekFPrefab, new Vector3(-4.5f, 0, 6.5f), Quaternion.identity);
                 greekF.GetComponent<NetworkObject>().Spawn();
-                asianF = Instantiate(asianFPrefab, new Vector3(-9.5f, -1.5f, 7f), Quaternion.identity);
+                asianF = Instantiate(asianFPrefab, new Vector3(-9.5f, 0, 7f), Quaternion.identity);
                 asianF.GetComponent<NetworkObject>().Spawn();
             }
             // CloseDoors();
