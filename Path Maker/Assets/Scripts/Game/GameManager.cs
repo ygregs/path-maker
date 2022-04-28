@@ -33,6 +33,8 @@ namespace PathMaker
         private relay.RelayUtpSetup m_relaySetup;
         private relay.RelayUtpClient m_relayClient;
 
+        [SerializeField] private GameObject m_settingsMenu;
+
         private void Awake()
         {
             // Do some arbitrary operations to instantiate singletons.
@@ -60,6 +62,21 @@ namespace PathMaker
 
             Locator.Get.Messenger.Subscribe(this);
             BeginObservers();
+        }
+
+        void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (m_settingsMenu.activeSelf)
+                {
+                    m_settingsMenu.SetActive(false);
+                }
+                else
+                {
+                    m_settingsMenu.SetActive(true);
+                }
+            }
         }
 
         private void RetrieveLogInfo()

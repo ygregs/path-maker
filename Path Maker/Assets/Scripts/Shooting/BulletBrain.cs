@@ -91,7 +91,7 @@ namespace PathMaker.shooting
         [ServerRpc]
         void DebugServerRpc()
         {
-            Debug.Log("bullet collide");
+            // Debug.Log("bullet collide");
         }
     }
 }

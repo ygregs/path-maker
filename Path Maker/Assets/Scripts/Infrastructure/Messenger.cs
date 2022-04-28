@@ -116,6 +116,7 @@ namespace PathMaker
         StartTimer = 303,
         ResetTimer = 304,
         CompleteTimer = 305,
+        TakeDamage = 306,
     }
 
     public interface IReceiveMessages

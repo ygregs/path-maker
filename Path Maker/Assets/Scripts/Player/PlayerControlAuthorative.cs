@@ -5,8 +5,9 @@ using UnityEngine;
 // [RequireComponent(typeof(Unity.Netcode.Samples.ClientNetworkTransform))]
 public class PlayerControlAuthorative : NetworkBehaviour
 {
-    [SerializeField]
-    private float walkSpeed = 5f;
+    [SerializeField] private float walkSpeed = 5f;
+    [SerializeField] private float runSpeed = 7f;
+    [SerializeField] private float crouchSpeed = 3f;
 
     [SerializeField]
     private float runSpeedOffset = 2.0f;
@@ -35,8 +36,16 @@ public class PlayerControlAuthorative : NetworkBehaviour
     private bool IsInCrouch = false;
 
     private bool _rotateOnMove = true;
+    // private float speed = 5; // units per second
+    // private float turnSpeed = 90; // degrees per second
+    // private float jumpSpeed = 8;
+    // private float gravity = 9.8f;
 
-    public float Sensitivity = 1f;
+    [SerializeField] private float Sensitivity = 1f;
+    // [SerializeField] private float Gravity = 10;
+    // [SerializeField] private bool m_isGrounded;
+    // [SerializeField] private float JumpHeight = 1;
+
 
     public override void OnNetworkSpawn()
     {
@@ -96,6 +105,20 @@ public class PlayerControlAuthorative : NetworkBehaviour
     {
         if (Input.GetButtonDown("Jump"))
         {
+            //     if (Input.GetButtonDown("Jump") && m_isGrounded)
+            //     {
+            //         var _velocity = transform.position;
+            //         _velocity.y += Mathf.Sqrt(JumpHeight * -2f * Gravity);
+            //     }
+            // if (characterController.isGrounded)
+            // {
+
+            //     vSpeed = 0; // grounded character has vSpeed = 0...
+            //     if (Input.GetKeyDown("space"))
+            //     { // unless it jumps:
+            //         vSpeed = jumpSpeed;
+            //     }
+            // }
             UpdatePlayerStateServerRpc(PlayerState.Jump);
         }
         else
@@ -141,23 +164,25 @@ public class PlayerControlAuthorative : NetworkBehaviour
             else if (!ActiveRunningActionKey())
                 if (IsInCrouch)
                 {
-                    moveDir = moveDir * crouchSpeedOffset;
+                    walkSpeed = crouchSpeed;
                     UpdatePlayerStateServerRpc(PlayerState.WalkCrouch);
                 }
                 else
                 {
+                    walkSpeed = 5.0f;
                     UpdatePlayerStateServerRpc(PlayerState.Walk);
                 }
             else if (ActiveRunningActionKey())
             {
-                moveDir = moveDir * runSpeedOffset;
+                walkSpeed = runSpeed;
                 if (IsInCrouch)
                 {
-                    moveDir = moveDir * crouchSpeedOffset;
+                    walkSpeed = walkSpeed * crouchSpeedOffset;
                     UpdatePlayerStateServerRpc(PlayerState.RunCrouch);
                 }
                 else
                 {
+                    walkSpeed = 5.0f;
                     UpdatePlayerStateServerRpc(PlayerState.Run);
                 }
             }
@@ -173,6 +198,11 @@ public class PlayerControlAuthorative : NetworkBehaviour
             if (direction.magnitude >= 0.1f)
             {
                 // characterController.SimpleMove(moveDir * speed);
+                // var _velocity = transform.position;
+                // moveDir.y += Gravity * Time.deltaTime;
+                // characterController.Move(_velocity * Time.deltaTime);
+                characterController.Move(Physics.gravity * Time.deltaTime);
+
                 characterController.Move(moveDir.normalized * walkSpeed * Time.deltaTime);
                 if (_rotateOnMove)
                 {

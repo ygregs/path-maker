@@ -55,9 +55,15 @@ namespace PathMaker.ngo
 
         // private GameObject[] doorsToClose;
 
-        [SerializeField]
-        private GameObject m_doorPrefab;
+        [SerializeField] private GameObject m_doorPrefab;
+        [SerializeField] private GameObject m_manivellePrefab;
         private GameObject doorGo;
+        private GameObject manivelleGo;
+
+        [SerializeField] private GameObject greekFPrefab;
+        [SerializeField] private GameObject asianFPrefab;
+        private GameObject greekF;
+        private GameObject asianF;
 
         void Awake()
         {
@@ -71,6 +77,7 @@ namespace PathMaker.ngo
                 // CloseDoors();
                 WaitForEndingSequence_ClientRpc();
             }
+
         }
 
         public void CloseDoors()
@@ -83,6 +90,14 @@ namespace PathMaker.ngo
             {
                 doorGo.GetComponent<DoorBehaviour>().DoCloseDoor(() => Debug.Log("closing door..."));
                 doorGo.GetComponent<DoorBehaviour>().SetIsOpen(false);
+
+                // Reset manivelles 
+                manivelleGo.GetComponent<ManivelleBehaviour>().DoCloseDoor(() => Debug.Log("reseting manivelles..."));
+                manivelleGo.GetComponent<ManivelleBehaviour>().SetIsOpen(false);
+                manivelleGo.GetComponent<ManivelleBehaviour>().SetCanOpen(false);
+
+                greekF.SetActive(true);
+                asianF.SetActive(true);
             }
             //     else
             //     {
@@ -176,8 +191,15 @@ namespace PathMaker.ngo
         {
             if (IsServer)
             {
-                doorGo = Instantiate(m_doorPrefab, Vector3.zero, Quaternion.identity);
+                // doorGo = Instantiate(m_doorPrefab, Vector3.zero, Quaternion.identity);
+                doorGo = Instantiate(m_doorPrefab, new Vector3(15, 0, 10), Quaternion.identity);
                 doorGo.GetComponent<NetworkObject>().Spawn();
+                manivelleGo = Instantiate(m_manivellePrefab, new Vector3(2, 1.20f, 18), Quaternion.identity);
+                manivelleGo.GetComponent<NetworkObject>().Spawn();
+                greekF = Instantiate(greekFPrefab, new Vector3(-4.5f, -1.5f, 6.5f), Quaternion.identity);
+                greekF.GetComponent<NetworkObject>().Spawn();
+                asianF = Instantiate(asianFPrefab, new Vector3(-9.5f, -1.5f, 7f), Quaternion.identity);
+                asianF.GetComponent<NetworkObject>().Spawn();
             }
             // CloseDoors();
             Locator.Get.Messenger.OnReceiveMessage(MessageType.MinigameBeginning, null);
@@ -232,15 +254,16 @@ namespace PathMaker.ngo
                 default:
                     break;
             }
-            if (scoreType == ScoreType.Kill)
-            {
-                m_scorer.ScoreSuccess(shooterId, points);
-                m_health.TakeDamage(playerId, 40);
-            }
-            else
-            {
-                m_scorer.ScoreSuccess(playerId, points);
-            }
+            // if (scoreType == ScoreType.Kill)
+            // {
+            //     // m_health.TakeDamage(playerId, 40.0f);
+            //     m_scorer.ScoreSuccess(shooterId, points);
+            //     // TakeDamage_ClientRpc(playerId);
+            // }
+            // else
+            // {
+            m_scorer.ScoreSuccess(playerId, points);
+            // }
             if (scoreType == ScoreType.Flag)
             {
                 OnFlagReturned();
@@ -273,14 +296,22 @@ namespace PathMaker.ngo
                 asianTeamScore.Value = asianTeamScore.Value + points;
             }
         }
+        // [ClientRpc]
+        // void TakeDamage_ClientRpc(ulong id)
+        // {
+        //     if (m_localUserData.id == id)
+        //     {
+        //         m_health.TakeDamage(id, 40.0f);
+        //     }
+        // }
 
-        [ClientRpc]
-        public void SetAsianScore_ClientRpc(int newScore)
-        {
-            if (IsServer)
-                return;
-            asianScore = newScore;
-        }
+        // [ClientRpc]
+        // public void SetAsianScore_ClientRpc(int newScore)
+        // {
+        //     if (IsServer)
+        //         return;
+        //     asianScore = newScore;
+        // }
 
         public void OnFlagReturned()
         {
@@ -291,6 +322,7 @@ namespace PathMaker.ngo
                 Locator.Get.Messenger.OnReceiveMessage(MessageType.SpawnPlayer, null);
                 ShowLastRoundAnimationClientRpc();
                 CloseDoors();
+
                 // Debug.Log("first flag has returned");
             }
             else
