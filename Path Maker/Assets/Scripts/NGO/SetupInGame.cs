@@ -106,18 +106,19 @@ namespace PathMaker.ngo
             else
                 m_inGameManagerObj.AddComponent<RelayUtpNGOSetupClient>().Initialize(this, m_lobby, () =>
                 {
-                    // m_initializeTransport(transport); m_networkManager.StartClient(); SpawnSpawnerServerRpc();
+                    m_initializeTransport(transport); m_networkManager.StartClient();
+                    // SpawnSpawnerServerRpc();
                 });
 
 
         }
 
-        [ServerRpc]
-        void SpawnSpawnerServerRpc()
-        {
-            var spawner = GameObject.Instantiate(spawnerPrefab, Vector3.zero, Quaternion.identity);
-            spawner.GetComponent<NetworkObject>().Spawn();
-        }
+        // [ServerRpc]
+        // void SpawnSpawnerServerRpc()
+        // {
+        //     var spawner = GameObject.Instantiate(spawnerPrefab, Vector3.zero, Quaternion.identity);
+        //     spawner.GetComponent<NetworkObject>().Spawn();
+        // }
 
         private void OnConnectionVerified()
         {

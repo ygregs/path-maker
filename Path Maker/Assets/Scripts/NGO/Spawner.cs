@@ -7,8 +7,6 @@ namespace PathMaker
 {
     public class Spawner : NetworkBehaviour
     {
-        // Start is called before the first frame update
-
         [SerializeField] private GameObject hostPrefab;
         [SerializeField] private GameObject clientPrefab;
         public override void OnNetworkSpawn()

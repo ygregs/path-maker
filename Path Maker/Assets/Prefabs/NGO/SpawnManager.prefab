@@ -54,6 +54,10 @@ MonoBehaviour:
     m_InternalValue: 1
   secondAsianSpawn:
     m_InternalValue: 1
+  firstGreekSpawn:
+    m_InternalValue: 1
+  secondGreekSpawn:
+    m_InternalValue: 1
 --- !u!114 &487851363663174690
 MonoBehaviour:
   m_ObjectHideFlags: 0

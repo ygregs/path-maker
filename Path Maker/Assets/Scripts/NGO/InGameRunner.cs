@@ -60,11 +60,15 @@ namespace PathMaker.ngo
         [SerializeField] private GameObject bridgeDoorGoPrefab;
         [SerializeField] private GameObject m_manivellePrefab;
         [SerializeField] private GameObject m_manivelleAsianPrefab;
+
+        private GameObject doorGo;
         private GameObject doorGo1;
         private GameObject doorGo2;
         private GameObject doorGo3;
         private GameObject doorGo4;
         private GameObject manivelleGoAsian;
+
+        private GameObject manivelleGo;
 
         [SerializeField] private GameObject greekFPrefab;
         [SerializeField] private GameObject asianFPrefab;
@@ -111,12 +115,26 @@ namespace PathMaker.ngo
                 manivelleGoAsian.GetComponent<ManivelleBehaviour>().SetIsOpen(false);
                 manivelleGoAsian.GetComponent<ManivelleBehaviour>().SetCanOpen(false);
 
-                greekF.GetComponent<NetworkObject>().Despawn();
-                asianF.GetComponent<NetworkObject>().Despawn();
+                // manivelleGo.GetComponent<ManivelleBehaviour>().DoCloseDoor(() => Debug.Log("reseting manivelles..."));
+                // manivelleGo.GetComponent<ManivelleBehaviour>().SetIsOpen(false);
+                // manivelleGo.GetComponent<ManivelleBehaviour>().SetCanOpen(false);
 
-                greekF = Instantiate(greekFPrefab, new Vector3(-4.5f, 0, 6.5f), Quaternion.identity);
+                // doorGo.GetComponent<DoorBehaviour>().DoCloseDoor(() => Debug.Log("closing door..."));
+                // doorGo.GetComponent<DoorBehaviour>().SetIsOpen(false);
+
+                // greekF.GetComponent<NetworkObject>().Despawn();
+                // asianF.GetComponent<NetworkObject>().Despawn();
+
+                // Final map position
+                greekF = Instantiate(greekFPrefab, new Vector3(0f, -1.77f, 278f), Quaternion.identity);
+                // Test scene position
+                // greekF = Instantiate(greekFPrefab, new Vector3(7f, 0f, 41f), Quaternion.Euler(0f, 90f, 0f));
                 greekF.GetComponent<NetworkObject>().Spawn();
-                asianF = Instantiate(asianFPrefab, new Vector3(-9.5f, 0, 7f), Quaternion.identity);
+
+                // Final map position
+                asianF = Instantiate(asianFPrefab, new Vector3(346f, -3.48f, 282f), Quaternion.identity);
+                // Test scene position
+                // asianF = Instantiate(asianFPrefab, new Vector3(12f, 0, 40f), Quaternion.Euler(0f, 90f, 0f));
                 asianF.GetComponent<NetworkObject>().Spawn();
             }
             //     else
@@ -224,13 +242,19 @@ namespace PathMaker.ngo
                 manivelleGoAsian = Instantiate(m_manivelleAsianPrefab, new Vector3(285.4f, -2.3f, 280.5f), Quaternion.Euler(0f, 180f, 0f));
                 manivelleGoAsian.GetComponent<NetworkObject>().Spawn();
 
+                // doorGo = Instantiate(m_doorPrefab, new Vector3(17f, 0f, 22f), Quaternion.Euler(0f, 90f, 0f));
+                // doorGo.GetComponent<NetworkObject>().Spawn();
+
+                // manivelleGo = Instantiate(m_manivellePrefab, new Vector3(16f, 1.2f, 32f), Quaternion.Euler(0f, 0f, 0f));
+                // manivelleGo.GetComponent<NetworkObject>().Spawn();
+
                 // position in test scene:
-                // greekF = Instantiate(greekFPrefab, new Vector3(-4.5f, 0, 6.5f), Quaternion.identity);
+                // greekF = Instantiate(greekFPrefab, new Vector3(7f, 0f, 41f), Quaternion.Euler(0f, 90f, 0f));
                 // position in final scene:
                 greekF = Instantiate(greekFPrefab, new Vector3(0f, -1.77f, 278f), Quaternion.identity);
                 greekF.GetComponent<NetworkObject>().Spawn();
                 // postion in test scene:
-                // asianF = Instantiate(asianFPrefab, new Vector3(-9.5f, 0, 7f), Quaternion.identity);
+                // asianF = Instantiate(asianFPrefab, new Vector3(12f, 0, 40f), Quaternion.Euler(0f, 90f, 0f));
                 asianF = Instantiate(asianFPrefab, new Vector3(346f, -3.48f, 282f), Quaternion.identity);
                 asianF.GetComponent<NetworkObject>().Spawn();
             }
