@@ -66,6 +66,8 @@ public class ShooterController : NetworkBehaviour
                 _playerController.SetRotateOnMove(true);
                 aimRigWeight = 0f;
                 _animator.SetLayerWeight(1, Mathf.Lerp(_animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
+                _playerController.RightClamp = float.MinValue;
+                _playerController.LeftClamp = float.MaxValue;
             }
 
             if (_input.shoot && _input.aim)

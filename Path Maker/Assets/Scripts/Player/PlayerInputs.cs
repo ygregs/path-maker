@@ -16,6 +16,8 @@ public class PlayerInputs : MonoBehaviour
     public bool cursorLocked = true;
     public bool cursorInputForLook = true;
 
+    public TPSController _playerController;
+
     public void OnMove(InputValue value)
     {
         MoveInput(value.Get<Vector2>());
@@ -54,9 +56,10 @@ public class PlayerInputs : MonoBehaviour
         AccelerateInput(value.isPressed);
     }
 
-     public void OnAim(InputValue value)
+    public void OnAim(InputValue value)
     {
         AimInput(value.isPressed);
+        _playerController.OnAim();
     }
 
     public void MoveInput(Vector2 newMoveDirection)

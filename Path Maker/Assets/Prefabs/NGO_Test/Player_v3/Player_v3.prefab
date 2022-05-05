@@ -1446,6 +1446,7 @@ MonoBehaviour:
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
+  _playerController: {fileID: 2246559245027389723}
 --- !u!114 &8138219107307321326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1474,6 +1475,7 @@ MonoBehaviour:
   MoveSpeed: 30
   SprintSpeed: 60
   CrouchSpeed: 20
+  AimSpeed: 20
   RotationSmoothTime: 0.183
   JumpHeight: 0.5
   Gravity: -15
@@ -1488,6 +1490,8 @@ MonoBehaviour:
   CinemachineCameraTarget: {fileID: 6407651781198534832}
   TopClamp: 70
   BottomClamp: -30
+  RightClamp: -3.4028235e+38
+  LeftClamp: 3.4028235e+38
   CameraAngleOverride: 0
   LockCameraPosition: 0
 --- !u!114 &1375340224371140400
@@ -1718,8 +1722,8 @@ MonoBehaviour:
         transform: {fileID: 0}
         weight: 0
     m_Offset: {x: 0, y: 0, z: 0}
-    m_MinLimit: -30
-    m_MaxLimit: 30
+    m_MinLimit: -180
+    m_MaxLimit: 180
     m_AimAxis: 2
     m_UpAxis: 5
     m_WorldUpType: 0

@@ -10,6 +10,8 @@ public class TPSController : NetworkBehaviour
     public float SprintSpeed = 8.0f;
     public float CrouchSpeed = 2.0f;
 
+    public float AimSpeed = 2.0f;
+
     [Range(0.0f, 0.3f)]
     public float RotationSmoothTime = 0.12f;
 
@@ -50,6 +52,8 @@ public class TPSController : NetworkBehaviour
 
     [Tooltip("How far in degrees can you move the camera down")]
     public float BottomClamp = -30.0f;
+    public float RightClamp = float.MinValue;
+    public float LeftClamp = float.MaxValue;
 
     [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
     public float CameraAngleOverride = 0.0f;
@@ -179,7 +183,8 @@ public class TPSController : NetworkBehaviour
         }
 
         // clamp our rotations so our values are limited 360 degrees
-        _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+        // _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+        _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, RightClamp, LeftClamp);
         _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 
         // Cinemachine will follow this target
@@ -189,8 +194,22 @@ public class TPSController : NetworkBehaviour
 
     private void Move()
     {
-        // set target speed based on move speed, sprint speed and if sprint is pressed
-        float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+        // stop sprint if aiming
+        if (_input.aim)
+        {
+            _input.sprint = false;
+        }
+
+        // set target speed based on move speed, sprint speed and if sprint is pressed and aim speed if aim is pressed
+        float targetSpeed = MoveSpeed;
+        if (_input.sprint && !_input.aim)
+        {
+            targetSpeed = SprintSpeed;
+        }
+        else if (_input.aim)
+        {
+            targetSpeed = AimSpeed;
+        }
 
         // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
@@ -229,12 +248,12 @@ public class TPSController : NetworkBehaviour
 
         // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
         // if there is a move input rotate player when the player is moving
+        _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                          _mainCamera.transform.eulerAngles.y;
+        float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+            RotationSmoothTime);
         if (_input.move != Vector2.zero)
         {
-            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                              _mainCamera.transform.eulerAngles.y;
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                RotationSmoothTime);
 
             // rotate to face input direction relative to camera position
             if (_rotateOnMove)
@@ -243,12 +262,12 @@ public class TPSController : NetworkBehaviour
             }
         }
 
-
         Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
         // move the player
         _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
                          new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+
 
         if (!_input.jump)
         {
@@ -271,10 +290,36 @@ public class TPSController : NetworkBehaviour
                 }
                 else
                 {
-                    UpdatePlayerStateServerRpc(PlayerState.Walk);
+                    if (_input.aim)
+                    {
+                        if (_input.move.x == 0 && _input.move.y == 0)
+                        {
+                            UpdatePlayerStateServerRpc(PlayerState.Idle);
+                        }
+                        else if (_input.move.x >= 0.85f && _input.move.y < 0.4f && _input.move.y > -0.4f)
+                        {
+                            UpdatePlayerStateServerRpc(PlayerState.RightStrafeWalk);
+                        }
+                        else if (_input.move.x <= -0.85f && _input.move.y < 0.4f && _input.move.y > -0.4f)
+                        {
+                            UpdatePlayerStateServerRpc(PlayerState.LeftStrafeWalk);
+                        }
+                        else if (_input.move.x < 0.4f && _input.move.x > -0.4f && _input.move.y >= -0.85f)
+                        {
+                            UpdatePlayerStateServerRpc(PlayerState.BackwardsWalk);
+                        }
+                        else
+                        {
+                            UpdatePlayerStateServerRpc(PlayerState.Walk);
+                        }
+                    }
+                    else
+                    {
+                        UpdatePlayerStateServerRpc(PlayerState.Walk);
+                    }
                 }
             }
-            else if (_input.sprint)
+            else if (_input.sprint && !_input.aim)
             {
                 if (_input.crouch)
                 {
@@ -286,30 +331,6 @@ public class TPSController : NetworkBehaviour
                 }
             }
         }
-        // update animator if using character
-        // if (_hasAnimator)
-        // {
-        //     // _animator.SetFloat(_animIDSpeed, _animationBlend);
-        //     // _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-        //     // if (_input.jump || _jumpTimeoutDelta > 0.0f)
-        //     // {
-        //     if (currentHorizontalSpeed == 0)
-        //     {
-        //         // _netAnimator.Animator.SetBool(_animIDIdle, true);
-        //         // _netAnimator.Animator.SetBool(_animIDWalk, false);
-        //         UpdatePlayerStateServerRpc(PlayerState.Idle);
-        //     }
-        //     else
-        //     {
-        //         UpdatePlayerStateServerRpc(PlayerState.Walk);
-        //         // _netAnimator.Animator.SetBool(_animIDWalk, true);
-        //         // _netAnimator.Animator.SetBool(_animIDIdle, false);
-        //     }
-        // _
-        // }
-        // netAnimator.Animator.SetFloat(_animIDSpeed, _animationBlend);
-        // _netAnimator.Animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-        // }
     }
 
     private void JumpAndGravity()
@@ -401,6 +422,27 @@ public class TPSController : NetworkBehaviour
         //         AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
         //     }
         // }
+    }
+
+    public void OnAim()
+    {
+        var curX = _input.move.x;
+        var curY = _input.move.y;
+        if (_input.move.x != 0 || _input.move.y != 0)
+        {
+            _input.move.x = 0;
+            _input.move.y = 0;
+        }
+        Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+        _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                       _mainCamera.transform.eulerAngles.y;
+        float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+            0.005f);
+        transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+        RightClamp = _mainCamera.transform.eulerAngles.y - 15f;
+        LeftClamp = _mainCamera.transform.eulerAngles.y + 30f;
+        _input.move.x = curX;
+        _input.move.y = curY;
     }
 
 }

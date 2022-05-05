@@ -7,6 +7,8 @@ public enum PlayerState
     IdleCrouch,
     WalkCrouch,
     RunCrouch,
+    RightStrafeWalk,
+    LeftStrafeWalk,
+    BackwardsWalk,
     // Punch,
-    // ReverseWalk,
 }
