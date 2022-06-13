@@ -24,7 +24,7 @@ namespace PathMaker
 
         private Data m_data = new Data();
         private UI.TimerUI m_ui;
-        private const int k_countdownTime = 180;
+        private const int k_countdownTime = 600;
 
         public void OnEnable()
         {

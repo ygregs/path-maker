@@ -16,6 +16,8 @@ namespace PathMaker
 
         public DoorType m_type = DoorType.FirstDoor;
 
+        public TeamState m_team; // door of type asian type can be opened by greeks but not by asians.
+
         [SerializeField]
         private Unity.Netcode.Components.NetworkAnimator m_animator;
 
@@ -25,7 +27,7 @@ namespace PathMaker
         public void DoOpenDoor(Action onOpenComplete)
         {
             m_onOpenComplete = onOpenComplete;
-            Debug.Log("do openning animation");
+            // Debug.Log("do openning animation");
             m_animator.Animator.SetBool("Open", true);
         }
 

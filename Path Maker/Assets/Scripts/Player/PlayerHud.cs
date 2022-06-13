@@ -23,8 +23,8 @@ namespace PathMaker
         {
             if (NetworkManager.Singleton.IsServer)
             {
-                // _playerName.Value = Locator.Get.Authenticator.GetAuthData().GetContent("playername");
-                _playerName.Value = "Player " + NetworkManager.Singleton.LocalClientId;
+                _playerName.Value = Locator.Get.Authenticator.GetAuthData().GetContent("playername");
+                // _playerName.Value = "Player " + NetworkManager.Singleton.LocalClientId;
             }
             else
             {
@@ -36,8 +36,8 @@ namespace PathMaker
         [ServerRpc]
         void SubmitNameRequestServerRpc(string playerName, ulong clientId)
         {
-            // _playerName.Value = playerName;
-            _playerName.Value = "Player " + clientId;
+            _playerName.Value = playerName;
+            // _playerName.Value = "Player " + clientId;
         }
 
 

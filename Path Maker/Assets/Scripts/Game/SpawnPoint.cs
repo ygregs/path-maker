@@ -4,6 +4,7 @@ using Unity.Netcode;
 public class SpawnPoint : NetworkBehaviour
 {
     public NetworkVariable<bool> IsOccupied = new NetworkVariable<bool>(false);
+    public NetworkVariable<bool> IsAsian;
 
     public void SetOccupied(bool state)
     {

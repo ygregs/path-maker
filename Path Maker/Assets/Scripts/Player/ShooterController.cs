@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using Cinemachine;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.Audio;
 
 public class ShooterController : NetworkBehaviour
 {
@@ -30,6 +31,9 @@ public class ShooterController : NetworkBehaviour
     private Animator _animator;
     private float aimRigWeight;
     private PathMaker.shooting.ShootingModeController _shootingModeController;
+
+    //sound 
+    [SerializeField] private AudioSource fireSound;
 
     // Synchronisation of animatior layers weight
     public enum LayerState
@@ -170,6 +174,7 @@ public class ShooterController : NetworkBehaviour
 
             if (_input.shoot && _input.aim && CanShoot())
             {
+                fireSound.Play();
                 _input.shoot = false;
                 if (LastShootTime + ShootDelay < Time.time)
                 {

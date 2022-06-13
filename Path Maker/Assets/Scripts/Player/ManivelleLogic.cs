@@ -23,6 +23,7 @@ namespace PathMaker
         {
             var teamStateObj = gameObject.GetComponent<TeamLogic>();
             m_teamState = teamStateObj.playerNetworkTeam.Value;
+            // if (collider.gameObject.tag == "Manivelle" && !collider.gameObject.GetComponent<ManivelleBehaviour>().IsOpen.Value && collider.gameObject.GetComponent<ManivelleBehaviour>().m_team != m_teamState)
             if (collider.gameObject.tag == "Manivelle" && !collider.gameObject.GetComponent<ManivelleBehaviour>().IsOpen.Value)
             {
                 canOpen.Value = true;

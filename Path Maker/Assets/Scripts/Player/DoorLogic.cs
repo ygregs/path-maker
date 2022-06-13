@@ -21,6 +21,7 @@ namespace PathMaker
         {
             var teamStateObj = gameObject.GetComponent<TeamLogic>();
             m_teamState = teamStateObj.playerNetworkTeam.Value;
+            // if (collider.gameObject.tag == "Door" && !collider.gameObject.GetComponent<DoorBehaviour>().IsOpen.Value && collider.gameObject.GetComponent<DoorBehaviour>().m_team != m_teamState)
             if (collider.gameObject.tag == "Door" && !collider.gameObject.GetComponent<DoorBehaviour>().IsOpen.Value)
             {
                 var doorBehaviour = collider.gameObject.GetComponent<DoorBehaviour>();

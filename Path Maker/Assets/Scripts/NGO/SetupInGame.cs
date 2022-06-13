@@ -17,20 +17,19 @@ namespace PathMaker.ngo
         // [SerializeField] private GameObject m_prefabHelloWorldManager = default;
         [SerializeField] private GameObject[] m_disableWhileInGame = default;
 
-        [SerializeField] private GameObject spawnerManager_go;
-        private SpawnerManager spawnerManager;
 
         private GameObject m_inGameManagerObj;
         private GameObject m_inGameLogicObj;
         private NetworkManager m_networkManager;
         private InGameRunner m_inGameRunner;
 
-        [SerializeField]
-        private GameObject m_spawmManagerPrefab;
-        private GameObject m_spawnManagerGO;
+        [SerializeField] private GameObject m_spawnerManagerPrefab;
+        private GameObject spawnerManagerGO;
+        private SpawnerManager spawnerManager;
 
         [SerializeField]
         private GameObject[] goToSetActive;
+        [SerializeField] private GameObject[] goToSetNoneActive;
 
         private bool m_doesNeedCleanup = false;
         private bool m_hasConnectedViaNGO = false;
@@ -39,13 +38,20 @@ namespace PathMaker.ngo
         private LocalLobby m_lobby;
         private LobbyUser m_localUser;
 
-        [SerializeField] private GameObject spawnerPrefab;
+        // [SerializeField] private GameObject spawnerPrefab;
+
+         [SerializeField] private GameObject greekSPrefab;
+        [SerializeField] private GameObject asianSPrefab;
+        private GameObject greekS;
+        private GameObject greekS2;
+        private GameObject asianS;
+        private GameObject asianS2;
 
 
         public void Start()
         {
             Locator.Get.Messenger.Subscribe(this);
-            spawnerManager = spawnerManager_go.GetComponent<SpawnerManager>();
+            // spawnerManager = spawnerManager_go.GetComponent<SpawnerManager>();
         }
         public void OnDestroy()
         {
@@ -66,25 +72,37 @@ namespace PathMaker.ngo
             }
         }
 
+        private void SetGODisable() {
+            foreach(var go in goToSetNoneActive) {
+                go.SetActive(false);
+            }
+        }
+
+        private void SetGOReActive() {
+           foreach(var go in goToSetNoneActive) {
+                go.SetActive(true);
+            } 
+        }
+
         /// <summary>
         /// The prefab with the NetworkManager contains all of the assets and logic needed to set up the NGO minigame.
         /// The UnityTransport needs to also be set up with a new Allocation from Relay.
         /// </summary>
         private void CreateNetworkManager()
         {
-            // m_spawnManagerGO = GameObject.Instantiate(m_spawmManagerPrefab);
-            // var m_spawnManager = m_spawnManagerGO.GetComponent<SpawnManager>();
+             // position in test scene:
+                // greekS = Instantiate(greekSPrefab, new Vector3(7.5f, 0f, 15), Quaternion.Euler(0f, 180f, 0f));
+                // position in final scene:
+                greekS = Instantiate(greekSPrefab, new Vector3(-298f, 80f, -17f), Quaternion.identity);
+                // greekS.GetComponent<NetworkObject>().Spawn();
 
-            // GameObject[] asianSpawnGOArray = GameObject.FindGameObjectsWithTag("AsianSpawn");
-            // for (int i = 0; i < asianSpawnGOArray.Length; i++)
-            // {
-            //     m_spawnManager.AsianSpawnsArray[i] = asianSpawnGOArray[i].transform;
-            // }
-            // GameObject[] greekSpawnGOArray = GameObject.FindGameObjectsWithTag("GreekSpawn");
-            // for (int j = 0; j < greekSpawnGOArray.Length; j++)
-            // {
-            //     m_spawnManager.GreekSpawnsArray[j] = greekSpawnGOArray[j].transform;
-            // }
+                // postion in test scene:
+                // asianS = Instantiate(asianSPrefab, new Vector3(8.4f, 0, -3f), Quaternion.Euler(0f, 0f, 0f));
+                // position in final scene:
+                asianS = Instantiate(asianSPrefab, new Vector3(70f, 80f, 19), Quaternion.Euler(0f, -90f, 0f));
+                // asianS.GetComponent<NetworkObject>().Spawn();
+            spawnerManagerGO = GameObject.Instantiate(m_spawnerManagerPrefab);
+            spawnerManager = spawnerManagerGO.GetComponent<SpawnerManager>();
 
 
             m_inGameManagerObj = GameObject.Instantiate(m_prefabNetworkManager);
@@ -157,6 +175,7 @@ namespace PathMaker.ngo
                 m_doesNeedCleanup = true;
                 SetMenuVisibility(false);
                 SetGOActive();
+                SetGODisable();
                 CreateNetworkManager();
             }
 
@@ -186,7 +205,10 @@ namespace PathMaker.ngo
             {
                 GameObject.Destroy(m_inGameManagerObj); // Since this destroys the NetworkManager, that will kick off cleaning up networked objects.
                 GameObject.Destroy(m_inGameLogicObj); // Since this destroys the NetworkManager, that will kick off cleaning up networked objects.
-                GameObject.Destroy(m_spawnManagerGO);
+                GameObject.Destroy(spawnerManagerGO);
+                GameObject.Destroy(greekS);
+                GameObject.Destroy(asianS);
+                SetGOReActive();
                 SetMenuVisibility(true);
                 m_lobby.RelayNGOCode = null;
                 m_doesNeedCleanup = false;

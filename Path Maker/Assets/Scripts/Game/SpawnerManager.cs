@@ -21,14 +21,31 @@ public class SpawnerManager : NetworkBehaviour
         int i = 0;
         while (!readyToSpawn && i < l)
         {
-            if (!possiblesSpaws[i].IsOccupied.Value)
-            {
+            // bool isAsian = isSameTeam(possiblesSpaws[i].IsAsian.Value);
+            // print(isAsian);
+            // print(possiblesSpaws[i].IsAsian.Value);
+            // if (PathMaker.Locator.Get.Authenticator.GetAuthData().GetContent("player_team") == null) {
+            //     print("solo mode");
+            // }
+            if (!possiblesSpaws[i].IsOccupied.Value && isSameTeam(possiblesSpaws[i].IsAsian.Value)) {
+            // {
+                // if (isAsian != null) {
+                    // if  (isSameTeam(possiblesSpaws[i].IsAsian.Value)) {
                 readyToSpawn = true;
                 spawnPoint = possiblesSpaws[i];
                 spawnPoint.SetOccupied(true);
                 spawnPosition = spawnPoint.gameObject.transform.position;
-                return spawnPosition;
-            }
+                return spawnPosition;                    
+                // }
+                // else {
+// readyToSpawn = true;
+                // spawnPoint = possiblesSpaws[i];
+                // spawnPoint.SetOccupied(true);
+                // spawnPosition = spawnPoint.gameObject.transform.position;
+                // return spawnPosition;
+                // }
+        }
+        
             i++;
         }
         if (!readyToSpawn)
@@ -36,6 +53,32 @@ public class SpawnerManager : NetworkBehaviour
             print("All spawns points are occupied... spawing player at (0,0,0)");
         }
         return Vector3.zero;
+    }
+
+    public bool isSameTeam(bool IsAsian) {
+        print(IsAsian);
+        if (PathMaker.Locator.Get.Authenticator.GetAuthData() == null) {
+            print("hello");
+            // print(PathMaker.Locator.Get.Authenticator);
+            PathMaker.Locator.Get.Authenticator.GetAuthData().SetContent("player_team", "AsianTeam");
+            return true;
+        }
+        if (IsAsian) {
+            if (PathMaker.Locator.Get.Authenticator.GetAuthData().GetContent("player_team") == "AsianTeam") {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            if (PathMaker.Locator.Get.Authenticator.GetAuthData().GetContent("player_team") == "AsianTeam") {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
     }
 
     public void ResetPlayerPosition(ulong clientId)

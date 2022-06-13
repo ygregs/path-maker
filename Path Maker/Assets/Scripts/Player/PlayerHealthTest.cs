@@ -48,7 +48,7 @@ public class PlayerHealthTest : NetworkBehaviour
         {
             if (player.gameObject.GetComponent<NetworkBehaviour>().OwnerClientId == clientId)
             {
-                player.Dying();
+                player.Dying(true);
             }
         };
     }

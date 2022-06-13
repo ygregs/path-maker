@@ -12,8 +12,8 @@ namespace PathMaker
         LoginMenu = 8,
         RegisterMenu = 16,
         InGame = 32,
-
         PauseMenu = 64,
+        SoloMode = 128,
     }
 
     [System.Serializable]

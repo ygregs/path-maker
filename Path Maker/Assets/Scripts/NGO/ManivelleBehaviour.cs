@@ -16,6 +16,7 @@ namespace PathMaker
         public NetworkVariable<bool> CanOpen = new NetworkVariable<bool>(false);
 
         public ManiType m_type = ManiType.Easy;
+        public TeamState m_team;
 
         [SerializeField]
         private Unity.Netcode.Components.NetworkAnimator m_animator;

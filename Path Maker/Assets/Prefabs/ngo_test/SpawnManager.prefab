@@ -46,8 +46,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabToSpawn: {fileID: 872032436064257161, guid: fefaac5968b1847b8bbc2f441b9020fe, type: 3}
-  playerAPrefab: {fileID: 9115575111868922374, guid: 0760c5d6fa3f44202ae9cba1530b6ec2, type: 3}
-  playerBPrefab: {fileID: 1316398113666942630, guid: fd178663a43134730bc4a73bd84fe729, type: 3}
+  playerAPrefab: {fileID: 7039014140976531386, guid: 8dcd6d88c6f58448ab1569911b4ada88, type: 3}
+  playerBPrefab: {fileID: 7039014140976531386, guid: 8dcd6d88c6f58448ab1569911b4ada88, type: 3}
+  readyToSpawn: 0
+  spawnPoint: {fileID: 0}
+  spawnPosition: {x: 0, y: 0, z: 0}
+  localPlayersList: []
 --- !u!114 &8959363273754261571
 MonoBehaviour:
   m_ObjectHideFlags: 0

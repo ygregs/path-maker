@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Services.Core;
 using Unity.Services.Authentication;
 using UnityEngine.SceneManagement;
+using Unity.Netcode;
 
 using UnityEngine;
 
@@ -254,6 +255,14 @@ namespace PathMaker
 
         private void SetGameState(GameState state)
         {
+            if (state == GameState.SoloMode) {
+                print("load solo_mode scene");
+                SceneManager.LoadScene("solo_mode_scene", LoadSceneMode.Additive); 
+            }
+            if (state == GameState.Menu && m_localGameState.State == GameState.SoloMode) {
+                SceneManager.UnloadSceneAsync("solo_mode_scene");
+                GameObject.Destroy(FindObjectOfType<NetworkManager>().gameObject);
+            }
             bool isLeavingLobby = (state == GameState.Menu || state == GameState.JoinMenu) && m_localGameState.State == GameState.Lobby;
             m_localGameState.State = state;
             if (isLeavingLobby)

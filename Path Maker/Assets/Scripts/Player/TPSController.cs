@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.InputSystem;
 using System.Collections;
+using UnityEngine.Audio;
 
 public class TPSController : NetworkBehaviour
 {
@@ -73,6 +74,14 @@ public class TPSController : NetworkBehaviour
     private float _rotationVelocity;
     private float _verticalVelocity;
     private float _terminalVelocity = 53.0f;
+
+    //sounds 
+    [SerializeField] private AudioSource walkSound;
+    [SerializeField] private AudioSource jumpSound;
+    [SerializeField] private AudioSource deathSound;
+    private float pitch_run = 2f;
+    private float pitch_crouch = 0.5f;
+    private float pitch_walk = 1f;
 
     // timeout deltatime
     private float _jumpTimeoutDelta;
@@ -279,10 +288,12 @@ public class TPSController : NetworkBehaviour
                     if (_input.crouch)
                     {
                         UpdatePlayerStateServerRpc(PlayerState.IdleCrouch);
+                        walkSound.Stop();
                     }
                     else
                     {
                         UpdatePlayerStateServerRpc(PlayerState.Idle);
+                        walkSound.Stop();
                     }
                 }
                 else if (!_input.sprint)
@@ -290,6 +301,8 @@ public class TPSController : NetworkBehaviour
                     if (_input.crouch)
                     {
                         UpdatePlayerStateServerRpc(PlayerState.WalkCrouch);
+                        walkSound.Play();
+                        
                     }
                     else
                     {
@@ -298,27 +311,55 @@ public class TPSController : NetworkBehaviour
                             if (_input.move.x == 0 && _input.move.y == 0)
                             {
                                 UpdatePlayerStateServerRpc(PlayerState.Idle);
+                                walkSound.Stop();
                             }
                             else if (_input.move.x >= 0.85f && _input.move.y < 0.4f && _input.move.y > -0.4f)
                             {
                                 UpdatePlayerStateServerRpc(PlayerState.RightStrafeWalk);
+                                if (!walkSound.isPlaying)
+                                {
+                                    walkSound.Play();
+
+                                }
+                                
                             }
                             else if (_input.move.x <= -0.85f && _input.move.y < 0.4f && _input.move.y > -0.4f)
                             {
                                 UpdatePlayerStateServerRpc(PlayerState.LeftStrafeWalk);
+                                if (!walkSound.isPlaying)
+                                {
+                                    walkSound.Play();
+
+                                }
+                              
                             }
                             else if (_input.move.x < 0.4f && _input.move.x > -0.4f && _input.move.y <= -0.85f)
                             {
                                 UpdatePlayerStateServerRpc(PlayerState.BackwardsWalk);
+                                if (!walkSound.isPlaying)
+                                {
+                                    walkSound.Play();
+                                }
                             }
                             else
                             {
                                 UpdatePlayerStateServerRpc(PlayerState.Walk);
+                                if (!walkSound.isPlaying)
+                                {
+                                    walkSound.Play();
+
+                                }
                             }
                         }
                         else
                         {
                             UpdatePlayerStateServerRpc(PlayerState.Walk);
+                            if (!walkSound.isPlaying)
+                            {
+                                walkSound.Play();
+               
+                            }
+                            
                         }
                     }
                 }
@@ -327,10 +368,21 @@ public class TPSController : NetworkBehaviour
                     if (_input.crouch)
                     {
                         UpdatePlayerStateServerRpc(PlayerState.RunCrouch);
+                        if (!walkSound.isPlaying)
+                        {
+                            walkSound.Play();
+                            
+                        }
+                        
                     }
                     else
                     {
                         UpdatePlayerStateServerRpc(PlayerState.Run);
+                        if (!walkSound.isPlaying)
+                        {
+                            walkSound.Play();
+                        }
+                        
                     }
                 }
 
@@ -339,6 +391,8 @@ public class TPSController : NetworkBehaviour
         else
         {
             UpdatePlayerStateServerRpc(PlayerState.WalkingToDying);
+            walkSound.Stop();
+            
         }
     }
 
@@ -460,10 +514,11 @@ public class TPSController : NetworkBehaviour
         }
     }
 
-    public void Dying()
+    public void Dying(bool isDying)
     {
         if (IsClient && IsOwner)
         {
+            if (isDying) {
             _animator.applyRootMotion = true;
             _input.aim = false;
             _input.sprint = false;
@@ -474,6 +529,7 @@ public class TPSController : NetworkBehaviour
             IsDead = true;
             _shooterController.ResetThirdCamera();
             _shooterController.IsDead = true;
+            }
             StartCoroutine(WaitForRespawn());
         }
     }
@@ -482,7 +538,7 @@ public class TPSController : NetworkBehaviour
     {
         if (IsClient && IsOwner)
         {
-            yield return new WaitForSeconds(5);
+            yield return new WaitForSeconds(1);
             FindObjectOfType<PathMaker.ingame.InGameCanvas>().DoBlackScreen(DespawnPlayer);
         }
     }
@@ -491,7 +547,7 @@ public class TPSController : NetworkBehaviour
     {
         if (IsClient && IsOwner)
         {
-            gameObject.GetComponent<SkinRenderer>().SetMeshesActive(false);
+            // gameObject.GetComponent<SkinRenderer>().SetMeshesActive(false);
             FindObjectOfType<PlayerHealthTest>().DespawnPlayer_ServerRpc(NetworkManager.Singleton.LocalClientId);
         }
     }
