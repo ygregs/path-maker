@@ -12,6 +12,7 @@ namespace PathMaker
 {
     public class GameManager : MonoBehaviour, IReceiveMessages
     {
+        public GameObject iaStuff;
         [SerializeField]
         private GameObject _cam;
         public Vector3 defaultCamPos;
@@ -264,10 +265,12 @@ namespace PathMaker
             }
             if (state == GameState.SoloMode) {
                 print("load solo_mode scene");
+                iaStuff.SetActive(true);
                 SceneManager.LoadScene("solo_mode_scene", LoadSceneMode.Additive); 
             }
             if (state == GameState.Menu && m_localGameState.State == GameState.SoloMode) {
                 SceneManager.UnloadSceneAsync("solo_mode_scene");
+                iaStuff.SetActive(false);
                 GameObject.Destroy(FindObjectOfType<NetworkManager>().gameObject);
             }
             bool isLeavingLobby = (state == GameState.Menu || state == GameState.JoinMenu) && m_localGameState.State == GameState.Lobby;

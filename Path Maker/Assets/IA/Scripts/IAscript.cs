@@ -10,6 +10,7 @@ using UnityEngine.AI;
         public NavMeshAgent agent;
         public CharacterController character;
         public GameObject[] player;
+        public string wpTag;
 
         public enum State
         {
@@ -48,11 +49,15 @@ using UnityEngine.AI;
             //agent.updatePosition = true;
             //agent.updateRotation = false;
 
-            waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
+            waypoints = GameObject.FindGameObjectsWithTag(wpTag);
             waypointInd = Random.Range(0, waypoints.Length);
             target = waypoints[waypointInd];
 
-            player = GameObject.FindGameObjectsWithTag("Player");
+            player = GameObject.FindGameObjectsWithTag("PlayerTarget");
+            // var p = GameObject.FindObjectOfType<TPSController>().gameObject;
+            // print(p);
+            // player = new GameObject[] {p};
+            // print(player);
 
             state = State.PATROL;
 
@@ -194,7 +199,8 @@ using UnityEngine.AI;
         // Update is called once per frame
         void Update()
         {
-            player = GameObject.FindGameObjectsWithTag("Player");
+            player = GameObject.FindGameObjectsWithTag("PlayerTarget");
+            // player = new [] {GameObject.FindObjectOfType<TPSController>().gameObject};
             if(player != null && state != State.ATTACK)
             {
                 checkPlayer();

@@ -157,6 +157,30 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 951099334
       objectReference: {fileID: 0}
+    - target: {fileID: 4242729460448662897, guid: 77119ad8e4116884f8f5a3ac7051871e, type: 3}
+      propertyPath: m_text
+      value: '[ Enemy ]'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242729460448662897, guid: 77119ad8e4116884f8f5a3ac7051871e, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242729460448662897, guid: 77119ad8e4116884f8f5a3ac7051871e, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242729460448662897, guid: 77119ad8e4116884f8f5a3ac7051871e, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4242729460448662897, guid: 77119ad8e4116884f8f5a3ac7051871e, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278190335
+      objectReference: {fileID: 0}
+    - target: {fileID: 5674504992611878796, guid: 77119ad8e4116884f8f5a3ac7051871e, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1656791791460262836, guid: 77119ad8e4116884f8f5a3ac7051871e, type: 3}
     - {fileID: 127928496606254962, guid: 77119ad8e4116884f8f5a3ac7051871e, type: 3}
@@ -181,6 +205,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   character: {fileID: 0}
   player: []
+  wpTag: 
   state: 0
   waypoints: []
   patrolSpeed: 0.01
