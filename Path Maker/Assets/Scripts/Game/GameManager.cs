@@ -70,17 +70,17 @@ namespace PathMaker
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                if (m_settingsMenu.activeSelf)
-                {
-                    m_settingsMenu.SetActive(false);
-                }
-                else
-                {
-                    m_settingsMenu.SetActive(true);
-                }
-            }
+            // if (Input.GetKeyDown(KeyCode.Escape))
+            // {
+            //     if (m_settingsMenu.activeSelf)
+            //     {
+            //         m_settingsMenu.SetActive(false);
+            //     }
+            //     else
+            //     {
+            //         m_settingsMenu.SetActive(true);
+            //     }
+            // }
         }
 
         private void RetrieveLogInfo()
@@ -260,6 +260,7 @@ namespace PathMaker
         {
             if (state == GameState.Menu || state == GameState.JoinMenu || state == GameState.Lobby) {
                 _cam.transform.position = defaultCamPos;
+                _cam.transform.rotation = Quaternion.identity;
             }
             if (state == GameState.SoloMode) {
                 print("load solo_mode scene");
