@@ -28,6 +28,7 @@ public class SpawnerManager : NetworkBehaviour
             //     print("solo mode");
             // }
             if (!possiblesSpaws[i].IsOccupied.Value && isSameTeam(possiblesSpaws[i].IsAsian.Value)) {
+            // if (!possiblesSpaws[i].IsOccupied.Value) {
             // {
                 // if (isAsian != null) {
                     // if  (isSameTeam(possiblesSpaws[i].IsAsian.Value)) {
@@ -50,15 +51,15 @@ public class SpawnerManager : NetworkBehaviour
         }
         if (!readyToSpawn)
         {
-            print("All spawns points are occupied... spawing player at (0,0,0)");
+            // print("All spawns points are occupied... spawing player at (0,0,0)");
         }
         return Vector3.zero;
     }
 
     public bool isSameTeam(bool IsAsian) {
-        print(IsAsian);
+        // print(IsAsian);
         if (PathMaker.Locator.Get.Authenticator.GetAuthData() == null) {
-            print("hello");
+            // print("hello");
             // print(PathMaker.Locator.Get.Authenticator);
             PathMaker.Locator.Get.Authenticator.GetAuthData().SetContent("player_team", "AsianTeam");
             return true;
@@ -154,6 +155,7 @@ public class SpawnerManager : NetworkBehaviour
             }
             if (IsServer)
             {
+                // print("spawn server player");
                 var playerA = Instantiate(playerAPrefab, spawnPosition, Quaternion.identity);
                 localPlayersList.Add(playerA);
                 playerA.SetActive(true);
@@ -166,13 +168,14 @@ public class SpawnerManager : NetworkBehaviour
         }
         else
         {
-            print("start host / client before spawning player");
+            // print("start host / client before spawning player");
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
     void SpawnClientPlayer_ServerRpc(ulong clientId, Vector3 pos)
     {
+        // print("spawn player" + clientId);
         var playerB = Instantiate(playerBPrefab, pos, Quaternion.identity);
         localPlayersList.Add(playerB);
         playerB.SetActive(true);
@@ -196,7 +199,7 @@ public class SpawnerManager : NetworkBehaviour
         }
         else
         {
-            print("start host / client before spawing objects");
+            // print("start host / client before spawing objects");
         }
     }
 

@@ -18,7 +18,7 @@ namespace PathMaker.shooting
             _bluePanel = GameObject.Find("BlueModePanel").GetComponent<ShootingModePanel>();
             _greenPanel = GameObject.Find("GreenModePanel").GetComponent<ShootingModePanel>();
             _redPanel = GameObject.Find("RedModePanel").GetComponent<ShootingModePanel>();
-            print(_bluePanel);
+            // print(_bluePanel);
         }
 
         void Update()

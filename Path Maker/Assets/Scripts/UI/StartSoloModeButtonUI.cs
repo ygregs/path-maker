@@ -7,7 +7,7 @@ namespace PathMaker.UI
 
         public void StartSolo()
         {
-            print("ehllo");
+            // print("ehllo");
             Locator.Get.Messenger.OnReceiveMessage(MessageType.ChangeGameState, GameState.SoloMode);
         }
     }

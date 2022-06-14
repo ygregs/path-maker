@@ -10,6 +10,6 @@ public class SoloModeGameManager : MonoBehaviour {
     }
 
     void OnDestroy() {
-        NetworkManager.Singleton.Shutdown();
+        // NetworkManager.Singleton.Shutdown();
     }
 }

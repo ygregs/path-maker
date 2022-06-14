@@ -18,9 +18,10 @@ namespace PathMaker.ngo
         [SerializeField] private GameObject[] m_disableWhileInGame = default;
 
 
-        private GameObject m_inGameManagerObj;
+       private GameObject m_inGameManagerObj;
+        
         private GameObject m_inGameLogicObj;
-        private NetworkManager m_networkManager;
+       private NetworkManager m_networkManager;
         private InGameRunner m_inGameRunner;
 
         [SerializeField] private GameObject m_spawnerManagerPrefab;
@@ -90,17 +91,6 @@ namespace PathMaker.ngo
         /// </summary>
         private void CreateNetworkManager()
         {
-             // position in test scene:
-                // greekS = Instantiate(greekSPrefab, new Vector3(7.5f, 0f, 15), Quaternion.Euler(0f, 180f, 0f));
-                // position in final scene:
-                greekS = Instantiate(greekSPrefab, new Vector3(-298f, 80f, -17f), Quaternion.identity);
-                // greekS.GetComponent<NetworkObject>().Spawn();
-
-                // postion in test scene:
-                // asianS = Instantiate(asianSPrefab, new Vector3(8.4f, 0, -3f), Quaternion.Euler(0f, 0f, 0f));
-                // position in final scene:
-                asianS = Instantiate(asianSPrefab, new Vector3(70f, 80f, 19), Quaternion.Euler(0f, -90f, 0f));
-                // asianS.GetComponent<NetworkObject>().Spawn();
             spawnerManagerGO = GameObject.Instantiate(m_spawnerManagerPrefab);
             spawnerManager = spawnerManagerGO.GetComponent<SpawnerManager>();
 
@@ -114,36 +104,65 @@ namespace PathMaker.ngo
             m_inGameRunner.roundState.Value = RoundState.Round1;
 
             m_inGameRunner.Initialize(OnConnectionVerified, m_lobby.PlayerCount, OnGameEnd, m_localUser);
+             // position in test scene:
+                // greekS = Instantiate(greekSPrefab, new Vector3(7.5f, 0f, 15), Quaternion.Euler(0f, 180f, 0f));
+                // position in final scene:
+                greekS = Instantiate(greekSPrefab, new Vector3(-298f, 80f, -17f), Quaternion.identity);
+
+                // postion in test scene:
+                // asianS = Instantiate(asianSPrefab, new Vector3(8.4f, 0, -3f), Quaternion.Euler(0f, 0f, 0f));
+                // position in final scene:
+                asianS = Instantiate(asianSPrefab, new Vector3(70f, 80f, 19), Quaternion.Euler(0f, -90f, 0f));
 
             UnityTransport transport = m_inGameManagerObj.GetComponent<UnityTransport>();
             if (m_localUser.IsHost)
             {
                 m_inGameManagerObj.AddComponent<RelayUtpNGOSetupHost>().Initialize(this, m_lobby, () =>
                 {
-                    m_initializeTransport(transport); m_networkManager.StartHost();
-                    spawnerManager.SpawnPlayer();
+                    m_initializeTransport(transport);
+                    m_networkManager.StartHost();
+                    // print("hello from server");
+                    // Debug.Log(spawnerManager);
+                    // greekS.GetComponent<NetworkObject>().Spawn();
+                    // asianS.GetComponent<NetworkObject>().Spawn();
+                    // spawnerManager.SpawnPlayer();
 
                     // var spawner = GameObject.Instantiate(spawnerPrefab, Vector3.zero, Quaternion.identity);
                     // spawner.GetComponent<NetworkObject>().Spawn();
                 });
             }
-            else
+            else {
                 m_inGameManagerObj.AddComponent<RelayUtpNGOSetupClient>().Initialize(this, m_lobby, () =>
                 {
-                    m_initializeTransport(transport); m_networkManager.StartClient();
-                    spawnerManager.SpawnPlayer();
+                    m_initializeTransport(transport);
+                    m_networkManager.StartClient();
+                    // print("hello from client");
+                    // Debug.Log(spawnerManager);
+                    // spawnerManager.SpawnPlayer();
                     // SpawnSpawnerServerRpc();
+                    // SpawnClientRpc(NetworkManager.Singleton.LocalClientId);
                 });
-
+            // spawnerManager.SpawnPlayer();
+            }
 
         }
 
-        // [ServerRpc]
-        // void SpawnSpawnerServerRpc()
-        // {
-        //     var spawner = GameObject.Instantiate(spawnerPrefab, Vector3.zero, Quaternion.identity);
-        //     spawner.GetComponent<NetworkObject>().Spawn();
-        // }
+        [ClientRpc]
+        void SpawnClientRpc(ulong clientId) {
+            if (clientId == NetworkManager.Singleton.LocalClientId) {
+            //    print("spawn client rpc");
+               spawnerManager.SpawnPlayer();
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        void SpawnSpawnerServerRpc()
+        {
+            // print("client has started");
+            // var spawner = GameObject.Instantiate(spawnerPrefab, Vector3.zero, Quaternion.identity);
+            // spawner.GetComponent<NetworkObject>().Spawn();
+            spawnerManager.SpawnPlayer();
+        }
 
         private void OnConnectionVerified()
         {

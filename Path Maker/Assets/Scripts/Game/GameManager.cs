@@ -13,6 +13,9 @@ namespace PathMaker
     public class GameManager : MonoBehaviour, IReceiveMessages
     {
         [SerializeField]
+        private GameObject _cam;
+        public Vector3 defaultCamPos;
+        [SerializeField]
         private List<LocalGameStateObserver> m_GameStateObservers = new List<LocalGameStateObserver>();
         [SerializeField]
         private List<LocalLobbyObserver> m_LocalLobbyObservers = new List<LocalLobbyObserver>();
@@ -255,6 +258,9 @@ namespace PathMaker
 
         private void SetGameState(GameState state)
         {
+            if (state == GameState.Menu || state == GameState.JoinMenu || state == GameState.Lobby) {
+                _cam.transform.position = defaultCamPos;
+            }
             if (state == GameState.SoloMode) {
                 print("load solo_mode scene");
                 SceneManager.LoadScene("solo_mode_scene", LoadSceneMode.Additive); 

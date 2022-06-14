@@ -28,8 +28,8 @@ namespace PathMaker
             }
             else
             {
-                // SubmitNameRequestServerRpc(Locator.Get.Authenticator.GetAuthData().GetContent("playername"));
-                SubmitNameRequestServerRpc("playername", NetworkManager.Singleton.LocalClientId);
+                SubmitNameRequestServerRpc(Locator.Get.Authenticator.GetAuthData().GetContent("playername"), NetworkManager.Singleton.LocalClientId);
+                // SubmitNameRequestServerRpc("playername", NetworkManager.Singleton.LocalClientId);
             }
         }
 
